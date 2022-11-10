@@ -1,4 +1,4 @@
-// a class which rates a given state by a number in between 0-1
+// a class which rates a given factor by a number in between 0-1
 class Scorer {
 
 	// criteria should be an array of Criterion
@@ -13,10 +13,10 @@ class Scorer {
 
 	}
 
-	score(state) {
+	score(factor) {
 
 		let score = this.criteria
-			.filter(c => c.test(state))
+			.filter(c => c.test(factor))
 			.map(c => c.weight)
 			.reduce((a, b) => a + b)
 
@@ -52,7 +52,7 @@ class Criterion {
 
 	}
 
-	test(state) {
+	test(factor) {
 
 		const KEYWORD_EITHER = "either"
 		const KEYWORD_ALL = "all"
@@ -63,22 +63,22 @@ class Criterion {
 		]
 
 		// test without reserved keywords
-		function testWithCriterionObject(state, criterion) {
+		function testWithCriterionObject(factor, criterion) {
 			let props = Object.keys(criterion)
 			props = props.filter(p => !RESERVED_PROPNAME.includes(p))
-			return props.every(p => criterion[p] === state[p])
+			return props.every(p => criterion[p] === factor[p])
 		}
 
 		// test all subcriteria in ALL
 		if (this.criterion[KEYWORD_ALL]) {
-			return this.criterion[KEYWORD_ALL].every(c => testWithCriterionObject(state, c))
+			return this.criterion[KEYWORD_ALL].every(c => testWithCriterionObject(factor, c))
 		}
 		// test all subcriteria in EITHER
 		else if (this.criterion[KEYWORD_EITHER]) {
-			return this.criterion[KEYWORD_EITHER].some(c => testWithCriterionObject(state, c))
+			return this.criterion[KEYWORD_EITHER].some(c => testWithCriterionObject(factor, c))
 		}
 
-		return testWithCriterionObject(state, this.criterion)
+		return testWithCriterionObject(factor, this.criterion)
 	}
 
 }
