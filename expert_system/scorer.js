@@ -1,3 +1,5 @@
+import { AllMatchCondition, AndCondition, InverseCondition, OrCondition } from "./rules.js"
+
 // a class which rates a given factor by a number in between 0-1
 class Scorer {
 
@@ -18,7 +20,7 @@ class Scorer {
 		let score = this.criteria
 			.filter(c => c.test(factor))
 			.map(c => c.weight)
-			.reduce((a, b) => a + b)
+			.reduce((a, b) => a + b, 0)
 
 		return score / this.totalWeight
 
@@ -26,7 +28,7 @@ class Scorer {
 
 }
 
-class Criterion {
+export class Criterion {
 
 	/**
 	 * @param criterion An object that specify the value of fields to check,
@@ -43,42 +45,60 @@ class Criterion {
 	 * new Criterion({ all: [ { a: 1 }, { b: 2 } ] }).test({ a: 4, b: 2 }) // false 
 	 * @param weight A weight of the criterion, should be > 0
 	 *  */ 
-	constructor(criterion, weight) {
+	constructor(criterion, weight = 1) {
 
-		this.criterion = criterion
 		this.weight = weight
+
+		function buildConditions(criterion) {
+			
+			const reservedKeywords = [
+				{
+					name: "all",
+					action: (subcriteria) => {
+						let subconditions = subcriteria.map(c => buildConditions(c))
+						return new AndCondition(subconditions)
+					}
+				},
+				{
+					name: "either",
+					action: (subcriteria) => {
+						let subconditions = subcriteria.map(c => buildConditions(c))
+						return new OrCondition(subconditions)
+					}
+				},
+				{
+					name: "not",
+					action: (subcriterion) => {
+						let subcondition = buildConditions(subcriterion)
+						return new InverseCondition(subcondition)
+					}
+				}
+			]
+
+			let newCondition = null
+
+			reservedKeywords.forEach(keyword => {
+				if (criterion[keyword.name]) {
+					newCondition = keyword.action(criterion[keyword.name])		
+				}
+			})
+
+			if (!newCondition) {
+				newCondition = new AllMatchCondition(criterion)
+			}
+
+			return newCondition
+
+		}
+
+		this.condition = buildConditions(criterion)
 
 		Object.freeze(this)
 
 	}
 
 	test(factor) {
-
-		const KEYWORD_EITHER = "either"
-		const KEYWORD_ALL = "all"
-
-		const RESERVED_PROPNAME = [
-			KEYWORD_EITHER,
-			KEYWORD_ALL
-		]
-
-		// test without reserved keywords
-		function testWithCriterionObject(factor, criterion) {
-			let props = Object.keys(criterion)
-			props = props.filter(p => !RESERVED_PROPNAME.includes(p))
-			return props.every(p => criterion[p] === factor[p])
-		}
-
-		// test all subcriteria in ALL
-		if (this.criterion[KEYWORD_ALL]) {
-			return this.criterion[KEYWORD_ALL].every(c => testWithCriterionObject(factor, c))
-		}
-		// test all subcriteria in EITHER
-		else if (this.criterion[KEYWORD_EITHER]) {
-			return this.criterion[KEYWORD_EITHER].some(c => testWithCriterionObject(factor, c))
-		}
-
-		return testWithCriterionObject(factor, this.criterion)
+		return this.condition.test(factor)
 	}
 
 }
