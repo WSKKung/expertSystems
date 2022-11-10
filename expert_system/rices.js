@@ -1,6 +1,16 @@
 import { area, disease, inSeason, pest, rainFrequency, region, riceType, waterLevel } from "./variables.js";
 import { ScorerBuilder } from "./scorer.js";
 
+/**
+ * Get a list
+ * @param {*} factor An object contains fields describing each factor
+ * 					 that affect the breed of rice to plant.
+ * @return A list of object containing the name of the rice breed and its rated score
+ */
+export function getRiceScoreList(factor) {
+
+}
+
 // Map[riceType -> Map[ riceBreed, scorer ]]
 const riceScorers = new Map()
 
@@ -19,7 +29,7 @@ function addRice(name, type, scorer) {
 	map.set(name, scorer)
 }
 
-// create a new scorer
+// shorthand for creating a new scorer
 function scorer() {
 	return new ScorerBuilder()
 }
@@ -45,3 +55,4 @@ addRice("กข 41", riceType.paddy, scorer()
 	.add({ disease: disease.blast }, 1)
 	.build()
 )
+
