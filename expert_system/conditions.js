@@ -1,22 +1,48 @@
-class Condition {
+export class Condition {
+
+	/**
+	 * Test if the object meet the condition
+	 * @param {*} obj an object to check
+	 * @return {Boolean} True if the object meet the condition 
+	 */
 	test(obj) {
 		throw Error('test function is not implemented!')
 	}
 
+	/**
+	 * Build a new Condition that will check if BOTH this AND other Condition is true
+	 * @param {Condition} other Another condition
+	 * @return {Condition} New Condition
+	 */
 	and(other) {
 		return new AndCondition([ this, other ])
 	}
 
+	/**
+	 * Build a new Condition that will check if EITHER this OR other Condition is true
+	 * @param {Condition} other Another condition
+	 * @return {Condition} New Condition
+	 */
 	or(other) {
 		return new OrCondition([ this, other ])
 	}
 
+	/**
+	 * Build a new Condition that will check if BOTH this AND INVERSE OF other Condition is true
+	 * @param {Condition} other Another condition
+	 * @return {Condition} New Condition
+	 */
 	andNot(other) {
-		return new InverseCondition(this.and(other))
+		return this.and(new InverseCondition(other))
 	}
 
+	/**
+	 * Build a new Condition that will check if EITHER this OR INVERSE OF other Condition is true
+	 * @param {Condition} other Another condition
+	 * @return {Condition} New Condition
+	 */
 	orNot(other) {
-		return new InverseCondition(this.or(other))
+		return this.or(new InverseCondition(other))
 	}
 }
 
@@ -29,11 +55,11 @@ class Condition {
 // new AllMatchCondition({ a: 1, b: 2 }).test({ a: 1, b: 2 }) == true
 export class AllMatchCondition extends Condition {
 
-	/*
-	* props: object ที่เก็บ properties ที่จะให้ตรวจสอบทั้งหมด
-	* strict: flag ที่เมื่อ set จะตรวจสอบ properties โดยใช้ === แทน ==
-	* useIncludes: flag ที่เมื่อ set จะใช้ method includes ในการตรวจสอบหากค่าของ properties ใน props มี method นั้นๆ
-	*/
+	/**
+	 * @param {*} props object ที่เก็บ properties ที่จะให้ตรวจสอบทั้งหมด
+	 * @param {Boolean} strict flag ที่เมื่อ set จะตรวจสอบ properties โดยใช้ === แทน ==
+	 * @param {Boolean} useIncludes flag ที่เมื่อ set จะใช้ method includes ในการตรวจสอบหากค่าของ properties ใน props มี method นั้นๆ
+	 */
 	constructor(props, strict = true, useIncludes = true) {
 		super()
 		this.props = props
@@ -77,6 +103,8 @@ export class AllIncludeCondition extends Condition {
 	}
 }
 
+
+// complement (NOT)
 export class InverseCondition extends Condition {
 	constructor(baseCondition) {
 		super()
@@ -88,12 +116,18 @@ export class InverseCondition extends Condition {
 	}
 }
 
-export class AndCondition extends Condition {
-
+class CompoundCondition extends Condition {
+	/**
+	 * @param {Condition[]} conditions subconditions
+	 */
 	constructor(conditions) {
 		super()
 		this.conditions = conditions
 	}
+}
+
+// intersect (AND)
+export class AndCondition extends CompoundCondition {
 
 	test(obj) {
 		return this.conditions.every(c => c.test(obj))
@@ -105,7 +139,8 @@ export class AndCondition extends Condition {
 
 }
 
-export class OrCondition extends Condition {
+// union (OR)
+export class OrCondition extends CompoundCondition {
 
 	constructor(conditions) {
 		super()

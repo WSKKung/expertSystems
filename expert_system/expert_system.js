@@ -1,6 +1,11 @@
-import { getRiceScoreList } from "./rice_rules.js"
+import { getRiceScoreList, RiceBreed } from "./rice_rules.js"
 import * as V from "./variables.js"
 
+/**
+ * Handles user list input of rice pests during rice suggestion process
+ * @param {*} factor A factor object represents user input
+ * @returns {RiceBreed[]}
+ */
 export function getRiceBreedSuggestion(factor) {
 
 	// get water level properties
@@ -38,7 +43,7 @@ export function getRiceBreedSuggestion(factor) {
 
 	let riceScores = getRiceScoreList(factor)
 
-	// grab only the top 3
+	// grab only the top 3 with the highest score
 	riceScores = riceScores.sort((a, b) => b.score - a.score).slice(0, 3)
 
 	return riceScores

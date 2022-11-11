@@ -1,4 +1,4 @@
-import { AllMatchCondition, AndCondition, InverseCondition, OrCondition } from "./conditions.js"
+import { AllMatchCondition, AndCondition, InverseCondition, OrCondition, Condition } from "./conditions.js"
 
 // a class which rates a given factor by a number in between 0-1
 export class Scorer {
@@ -15,6 +15,11 @@ export class Scorer {
 
 	}
 
+	/**
+	 * Scores a given factor
+	 * @param {*} factor  a factor
+	 * @return {Number} A number between 0-1
+	 */
 	score(factor) {
 
 		let score = this.criteria
@@ -31,7 +36,7 @@ export class Scorer {
 export class Criterion {
 
 	/**
-	 * @param criterion An object that specify the value of fields to check,
+	 * @param {Object} criterion An object that specify the value of fields to check,
 	 * 					you can also nest a list of subcriteria by using the 
 	 * 					reserved fields `either` and `all` (case-sensitive).
 	 * 					The results of each subcriteria will then be joined
@@ -43,18 +48,28 @@ export class Criterion {
 	 * new Criterion({ a: 1, b: 2 }).test({ }) // false 
 	 * new Criterion({ either: [ { a: 1 }, { b: 2 } ] }).test({ a: 4, b: 2 }) // true 
 	 * new Criterion({ all: [ { a: 1 }, { b: 2 } ] }).test({ a: 4, b: 2 }) // false 
-	 * @param weight A weight of the criterion, should be > 0
+	 * @param {Number} weight A weight of the criterion, should be > 0
 	 *  */ 
 	constructor(criterion, weight = 1) {
 
 		this.weight = weight
 
+		/**
+		 * build Condition object from a given criterion object in JSON format
+		 * @param {*} criterion criterion object
+		 * @returns {Condition} new Condition
+		 */
 		function buildConditions(criterion) {
 			
 			const reservedKeywords = [
 				{
 					name: "all",
 					action: (subcriteria) => {
+						
+						if (!subcriteria.map) {
+							return buildConditions(subcriteria)
+						}
+
 						let subconditions = subcriteria.map(c => buildConditions(c))
 						return new AndCondition(subconditions)
 					}
@@ -62,15 +77,23 @@ export class Criterion {
 				{
 					name: "either",
 					action: (subcriteria) => {
+
+						if (!subcriteria.map) {
+							return buildConditions(subcriteria)
+						}
+
 						let subconditions = subcriteria.map(c => buildConditions(c))
 						return new OrCondition(subconditions)
+
 					}
 				},
 				{
 					name: "not",
 					action: (subcriterion) => {
+
 						let subcondition = buildConditions(subcriterion)
 						return new InverseCondition(subcondition)
+						
 					}
 				}
 			]
@@ -97,6 +120,11 @@ export class Criterion {
 
 	}
 
+	/**
+	 * Test if a given factor object matches the condition
+	 * @param {*} factor 
+	 * @return { Boolean } True if the condition are met
+	 */
 	test(factor) {
 		return this.condition.test(factor)
 	}
@@ -111,7 +139,7 @@ export class ScorerBuilder {
 
 	/**
 	 * Add a new criterion to the scorer
-	 * @param criterion An object that specify the value of fields to check,
+	 * @param {*} criterion An object that specify the value of fields to check,
 	 * 					you can also nest a list of subcriteria by using the 
 	 * 					reserved fields `either` and `all` (case-sensitive).
 	 * 					The results of each subcriteria will then be joined
@@ -124,7 +152,7 @@ export class ScorerBuilder {
 	 * new Criterion({ either: [ { a: 1 }, { b: 2 } ] }).test({ a: 4, b: 2 }) // true 
 	 * new Criterion({ all: [ { a: 1 }, { b: 2 } ] }).test({ a: 4, b: 2 }) // false 
 	 * @see Criterion
-	 * @param weight A weight of the criterion, should be > 0
+	 * @param {Number} weight A weight of the criterion, should be > 0
 	 *  */ 
 	add(criterion, weight) {
 		let newCriterion = new Criterion(criterion, weight)
@@ -134,7 +162,7 @@ export class ScorerBuilder {
 
 	/**
 	 * Build a scorer
-	 * @returns A new scorer
+	 * @return {Scorer} A new scorer
 	 */
 	build() {
 		return new Scorer(this.criteria)

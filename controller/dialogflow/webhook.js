@@ -3,24 +3,26 @@ import { area } from "./../../expert_system/variables.js"
 import { getRiceBreedSuggestion } from "../../expert_system/expert_system.js"
 import { context, contextParams, intent } from "./constants.js"
 
-// Accept fulfillment request from Dialogflow
+/**
+ * Accept fulfillment request from Dialogflow.
+ * @param {Request} req A Dialogflow request object
+ * @param {Response} res A Dialogflow response obkect
+ */
 export function fullfillmentRequest(req, res) {
   let agent = new WebhookClient({ request: req, response: res })
   let intentMap = new Map()
-  intentMap.set("Rude word", rudeWord)
   intentMap.set(intent.riceSuggest, handleSuggestionInput)
   intentMap.set(intent.riceSuggest_inputPest, handleSuggestionPestInput)
   intentMap.set(intent.riceSuggest_inputDisease, handleSuggestionDiseaseInput)
   intentMap.set(intent.riceSuggest_inputDisease_confirm, finallyGetRiceSuggestion)
   agent.handleRequest(intentMap)
-
 }
 
-// Intent handlers
-function rudeWord(agent) {
-  agent.add("")
-}
-
+/**
+ * Handles user single input flow during rice suggestion process
+ * @param {WebhookClient} agent An agent
+ * @returns {void}
+ */
 function handleSuggestionInput(agent) {
 
   let params = agent.parameters
@@ -47,6 +49,11 @@ function handleSuggestionInput(agent) {
 
 }
 
+/**
+ * Handles user list input of rice pests during rice suggestion process
+ * @param {WebhookClient} agent An agent
+ * @returns {void}
+ */
 function handleSuggestionPestInput(agent) {
 
   let params = agent.parameters
@@ -66,6 +73,11 @@ function handleSuggestionPestInput(agent) {
 
 }
 
+/**
+ * Handles user list input of rice disease during rice suggestion process
+ * @param {WebhookClient} agent An agent
+ * @returns {void}
+ */
 function handleSuggestionDiseaseInput(agent) {
 
   let params = agent.parameters
@@ -85,8 +97,13 @@ function handleSuggestionDiseaseInput(agent) {
   
 }
 
+/**
+ * Endpoint for receiving all user inputs and give a rice suggestion to user
+ * @param {WebhookClient} agent An agent
+ * @returns {void}
+ */
 function finallyGetRiceSuggestion(agent) {
-  
+
   let recommendingCtx = agent.context.get("recommending")
   let recommendParams = recommendingCtx.parameters
 
@@ -102,8 +119,14 @@ function finallyGetRiceSuggestion(agent) {
 
   let riceSuggestions = getRiceBreedSuggestion(factor)
   agent.add(riceSuggestions.map(rice => rice.name).join(", "))
+
 }
 
+/**
+ * Utility function for clearing all contexts from an agent
+ * @param {WebhookClient} agent An agent
+ * @returns {void}
+ */
 function clearAgentContexts(agent) {
   for (let ctx of agent.context) {
     agent.context.delete(ctx.name)

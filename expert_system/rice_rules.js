@@ -5,25 +5,39 @@ import { ScorerBuilder, Scorer } from "./scorer.js";
  * Get a list
  * @param {*} factor An object contains fields describing each factor
  * 					 that affect the breed of rice to plant.
- * @return A list of object containing the name of the rice breed and its rated score
+ * @return {RiceBreed[]} A list of object containing the name of the rice breed and its rated score
  */
 export function getRiceScoreList(factor) {
+
   let scoreList = []
   let scorers = riceScorers.get(factor.riceType)
+
   scorers.forEach((scorer, name) => {
-    scoreList.push({
-      name: name,
-      score: scorer.score(factor)
-    })
+    let score = scorer.score(factor)
+    scoreList.push(new RiceBreed(name, score))
   })
+
   return scoreList
+
+}
+
+export class RiceBreed {
+  /**
+   * Create a rice breed
+   * @param {String} name A name of the rice's breed
+   * @param {Number} score A score of this rice's breed
+   */
+  constructor(name, score) {
+    this.name = name
+    this.score = score
+  }
 }
 
 // Map[riceType -> Map[ riceBreed, scorer ]]
 const riceScorers = new Map()
 
 /**
- * 
+ * Add a rule for a single rice breed to use in rice suggestion
  * @param {String} name The name of the rice
  * @param {String} type The type of the rice. 
  * @param {Scorer} scorer The scorer of the rice, created by invoking `scorer()`
