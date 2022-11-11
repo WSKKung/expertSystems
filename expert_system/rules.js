@@ -47,7 +47,7 @@ export class AllMatchCondition extends Condition {
 		if (useIncludes) {
 			let oldComp = this.propValueComparer
 			this.propValueComparer = (o1, o2) => {
-				return o1.includes ? o1.includes(o2) : oldComp(o1, o2)
+				return (o1 && o1.includes) ? o1.includes(o2) : oldComp(o1, o2)
 			}
 		}
  	}
