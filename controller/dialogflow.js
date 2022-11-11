@@ -7,8 +7,10 @@ export function fullfillmentRequest(req, res) {
   let agent = new WebhookClient({ request: req, response: res })
   let intentMap = new Map()
   intentMap.set("Rude word", rudeWord)
-  intentMap.set("แนะนำข้าว", suggestRice)
-  intentMap.set("แนะนำข้าว - เลือกศัตรูพืช", handlePestInput)
+  intentMap.set("แนะนำข้าว", handleSuggestionInput)
+  intentMap.set("แนะนำข้าว - เลือกศัตรูพืช", handleSuggestionPestInput)
+  intentMap.set("แนะนำข้าว - เลือกโรคพืช", handleSuggestionDiseaseInput)
+  intentMap.set("แนะนำข้าว - เลือกโรคพืช - ยืนยัน", finallyGetRiceSuggestion)
   agent.handleRequest(intentMap)
 
 }
@@ -18,7 +20,7 @@ function rudeWord(agent) {
   agent.add("")
 }
 
-function suggestRice(agent) {
+function handleSuggestionInput(agent) {
 
   let params = agent.parameters
 
@@ -28,15 +30,11 @@ function suggestRice(agent) {
     return
   }
 
-  // rain frequency can be ignored on the following area
+  // rain frequency can be ignored on the following area, so we can skip to ask a pest
   if ([area.irrigatedLowland, area.floating, area.deepwater].includes(params.riceArea)) {
-    let factor = {
-      riceType: params.riceType,
-      province: params.province,
-      inSeason: params.season,
-      area: params.riceArea
-    }
+    // clear all contexts, including auto-generated one (from required fields)
     clearAgentContexts(agent)
+    // and then set new one with given params
     agent.context.set('recommending', 10, params)
     agent.context.set('input-pest', 2, params)
     agent.add("")
@@ -48,25 +46,57 @@ function suggestRice(agent) {
 
 }
 
-function handlePestInput(agent) {
-  let params = agent.parameters
-  params.prevRicePests = params.curRicePests || []
-  params.curRicePests = params.prevRicePests.concat(params.ricePest)
-  /*
-	agent.setFollowupEvent({
-		name: "input-pest",
-		parameters: params
-	})*/
-  for (let ctx of agent.context) {
-    ctx.parameters.prevRicePest = params.prevRicePest
-    ctx.parameters.curRicePests = params.curRicePests
-  }
+function handleSuggestionPestInput(agent) {
 
-  console.log(agent.conv().contexts)
-  console.log(agent.conv().contexts.output)
-  agent.add("")
+  let params = agent.parameters
+  let curRicePests = params.curRicePests || []
+  
+  // need to increase lifetime
+  // because some reason the final context did not shown in the response without it
+  if (!params.curRicePests.includes(params.ricePest)) {
+    for (let ctx of agent.context) {
+      ctx.lifetime += 1
+      ctx.parameters.curRicePests = curRicePests.concat(params.ricePest)
+    }
+  }
   
   agent.add("")
+
+}
+
+function handleSuggestionDiseaseInput(agent) {
+
+  let params = agent.parameters
+  let curRiceDiseases = params.curRiceDiseases || []
+  
+  // need to increase lifetime
+  // because some reason the final context did not shown in the response without it
+  if (!params.curRiceDiseases.includes(params.riceDisease)) {
+    for (let ctx of agent.context) {
+      ctx.lifetime += 1
+      ctx.parameters.curRiceDiseases = curRiceDiseases.concat(params.riceDisease)
+    }
+  }
+  
+  agent.add("")
+  
+}
+
+function finallyGetRiceSuggestion(agent) {
+  let recommendingCtx = agent.context.get("recommending")
+  let ctxParams = recommendingCtx.parameters
+  let factor = {
+    riceType: ctxParams.riceType,
+    province: ctxParams.province,
+    inSeason: ctxParams.season,
+    area: ctxParams.riceArea,
+    rainFrequency: ctxParams.rainFrequency,
+    pests: ctxParams.curRicePests,
+    diseases: ctxParams.curRiceDiseases
+  }
+  console.log(factor)
+  let riceSuggestions = getRiceBreedSuggestion(factor)
+  agent.add(riceSuggestions.map(rice => rice.name).join(", "))
 }
 
 function clearAgentContexts(agent) {
