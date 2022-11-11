@@ -31,11 +31,11 @@ export const inSeason = {
 export const province = {
 	kampaengPhet: 'กำแพงเพชร',
 	chiangRai: 'เชียงราย',
-	chiangMai: 'เชียงไหม่',
+	chiangMai: 'เชียงใหม่',
 	tak: 'ตาก',
 	nakhonSawan: 'นครสวรรค์',
 	nan: 'น่าน',
-	pichit: 'พิจิตร',
+	phichit: 'พิจิตร',
 	phitsanulok: 'พิษณุโลก',
 	phetchabun: 'เพชรบูรณ์',
 	phrae: 'แพร่',
@@ -55,10 +55,10 @@ export const province = {
 	trat: 'ตราด',
 	nakhonNayok: 'นครนายก',
 	nakhonPathom: 'นครพนม',
-	chainart: 'ชัยนาท',
+	chainat: 'ชัยนาท',
 	nonthaburi: 'นนทบุรี',
 	pathumThani: 'ปทุมธานี',
-	prachuapKhiriKhan: 'ประจวบคีรีขันธุ์',
+	prachuapKhiriKhan: 'ประจวบคีรีขันธ์',
 	prachinBuri: 'ปราจีนบุรี',
 	phraNakhonSiAyutthaya: 'พระนครศรีอยุธยา',
 	phetchaburi: 'เพชรบุรี',
@@ -69,10 +69,10 @@ export const province = {
 	samutSongkhram: 'สมุทรสงคราม',
 	samutSakhon: 'สมุทรสาคร',
 	saraburi: 'สระบุรี',
-	singBuri: 'สิงค์บุรี',
+	singBuri: 'สิงห์บุรี',
 	suphanBuri: 'สุพรรณบุรี',
 	angThong: 'อ่างทอง',
-	saKaeo: 'สระแก่ว',
+	saKaeo: 'สระแก้ว',
 
 	kalasin: 'กาฬสินธุ์',
 	khonKaen: 'ขอนแก่น',
@@ -80,11 +80,12 @@ export const province = {
 	yasothon: 'ยโสธร',
 	nakhonPhanom: 'นครพนม',
 	nakhonRatchasima: 'นครราชสีมา',
+    buengKan: 'บึงกาฬ',
 	buriRam: 'บุรีรัมย์',
 	mahaSarakham: 'มหาสารคาม',
 	roiEt: 'ร้อยเอ็ด',
 	loei: 'เลย',
-	siSaKet: 'ศรีสะเกธ',
+	siSaKet: 'ศรีสะเกษ',
 	sakonNakhon: 'สกลนคร',
 	surin: 'สุรินทร์',
 	nongKhai: 'หนองคาย',
@@ -164,7 +165,7 @@ makeEnum("disease", disease)
 
 function makeEnum(name, obj) {
 	obj.name = name
-  obj.keys = Object.keys(obj)
+	obj.keys = Object.keys(obj)
 	obj.values = obj.keys.map(p => obj[p])
 	Object.freeze(obj)
 }
