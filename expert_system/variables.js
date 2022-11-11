@@ -122,12 +122,12 @@ export const region = {
 
 // พื้นที่, นิเวศน์การปลูก
 export const area = {
-	rainfedLowland: 'rainfed_lowland',
-	irrigatedLowland: 'irrigated_lowland',
-	floating: 'floating',
-	deepwater: 'deepwater',
-	upland: 'upland',
-	highland: 'highland'
+	rainfedLowland: 'นาน้ำฝน',
+	irrigatedLowland: 'นาชลประทาน',
+	floating: 'นาข้าวขึ้นน้ำ',
+	deepwater: 'นาน้ำลึก',
+	upland: 'นาไร่',
+	highland: 'นาที่สูง'
 }
 
 // ศัตรูพืช
@@ -163,11 +163,8 @@ makeEnum("pest", pest)
 makeEnum("disease", disease)
 
 function makeEnum(name, obj) {
-	let props = Object.keys(obj)
-	props.forEach(p => {
-		obj[p] = `${name}.${obj[p]}`
-	})
 	obj.name = name
-	obj.values = props.map(p => obj[p])
+  obj.keys = Object.keys(obj)
+	obj.values = obj.keys.map(p => obj[p])
 	Object.freeze(obj)
 }
