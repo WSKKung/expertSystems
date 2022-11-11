@@ -12,9 +12,9 @@ export function fullfillmentRequest(req, res) {
   let agent = new WebhookClient({ request: req, response: res })
   let intentMap = new Map()
   intentMap.set(intent.riceSuggest, handleSuggestionInput)
-  intentMap.set(intent.riceSuggest_inputPest, handleSuggestionPestInput)
-  intentMap.set(intent.riceSuggest_inputDisease, handleSuggestionDiseaseInput)
-  intentMap.set(intent.riceSuggest_inputDisease_confirm, finallyGetRiceSuggestion)
+  intentMap.set(intent.inputPestForSuggestion, handleSuggestionPestInput)
+  intentMap.set(intent.inputDiseaseForSuggestion, handleSuggestionDiseaseInput)
+  intentMap.set(intent.confirmSuggestion, finallyGetRiceSuggestion)
   agent.handleRequest(intentMap)
 }
 
