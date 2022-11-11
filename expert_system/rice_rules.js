@@ -1,5 +1,5 @@
 import { area, disease, inSeason, pest, province, rainFrequency, region, riceType, waterLevel } from "./variables.js";
-import { ScorerBuilder } from "./scorer.js";
+import { ScorerBuilder, Scorer } from "./scorer.js";
 
 /**
  * Get a list
@@ -24,9 +24,9 @@ const riceScorers = new Map()
 
 /**
  * 
- * @param {*} name The name of the rice
- * @param {*} type The type of the rice. 
- * @param {*} scorer The scorer of the rice, created by invoking `scorer()`
+ * @param {String} name The name of the rice
+ * @param {String} type The type of the rice. 
+ * @param {Scorer} scorer The scorer of the rice, created by invoking `scorer()`
  * @see riceType in `expert_system/variable.js`
  */
 function addRice(name, type, scorer) {

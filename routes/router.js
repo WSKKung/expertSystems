@@ -1,5 +1,5 @@
 import { Router, json } from "express";
-import { fullfillmentRequest } from "../controller/dialogflow.js";
+import { fullfillmentRequest } from "../controller/dialogflow/webhook.js";
 const router = Router()
 
 router.get('/', (req, res) => {

@@ -1,4 +1,4 @@
-import { getRiceScoreList } from "./rices.js"
+import { getRiceScoreList } from "./rice_rules.js"
 import * as V from "./variables.js"
 
 export function getRiceBreedSuggestion(factor) {

@@ -1,7 +1,7 @@
-import { AllMatchCondition, AndCondition, InverseCondition, OrCondition } from "./rules.js"
+import { AllMatchCondition, AndCondition, InverseCondition, OrCondition } from "./conditions.js"
 
 // a class which rates a given factor by a number in between 0-1
-class Scorer {
+export class Scorer {
 
 	// criteria should be an array of Criterion
 	constructor(criteria) {
