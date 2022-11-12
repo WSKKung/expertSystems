@@ -1,7 +1,10 @@
 import { WebhookClient } from "dialogflow-fulfillment"
 import { getRiceBreedSuggestion, canInferWaterLevel } from "../../expert_system/expert_system.js"
 import { context, contextParams, intent } from "./constants.js"
-import { LineChatMsgFactory } from "./messages.js"
+import { LineChatMsgFactory, SimpleMessageFactory,  } from "./messages.js"
+
+const simpleMSGFactor = new SimpleMessageFactory()
+const lineMSGFactory = new LineChatMsgFactory()
 
 /**
  * Accept fulfillment request from Dialogflow.
@@ -27,26 +30,27 @@ export function fullfillmentRequest(req, res) {
 function handleSuggestionInput(agent) {
 
   let params = agent.parameters
-  let lineMSGFactory = new LineChatMsgFactory()
 
   // Ask rice type
   if (!params.riceType) {
     // TODO: add custom payload for user question
+    agent.add(simpleMSGFactor.riceTypeSelector())
     agent.add(lineMSGFactory.riceTypeSelector())
-    agent.add("")
     return
   }
 
   // Ask province
   if (!params.province) {
     // TODO: add custom payload for user question
-    agent.add("")
+    agent.add(simpleMSGFactor.provinceSelector())
     return
   }
 
   // Ask season
   if (!params.season) {
     // TODO: add custom payload for user question
+    agent.add(simpleMSGFactor.riceSeasonSelector())
+    agent.add(lineMSGFactory.riceSeasonSelector())
     agent.add("")
     return
   }
@@ -54,6 +58,8 @@ function handleSuggestionInput(agent) {
   // Ask area
   if (!params.riceArea) {
     // TODO: add custom payload for user question
+    agent.add(simpleMSGFactor.riceAreaSelector())
+    agent.add(lineMSGFactory.riceAreaSelector())
     agent.add("")
     return
   }
@@ -77,7 +83,8 @@ function handleSuggestionInput(agent) {
    // Ask rain Frequency
     else {
       // TODO: add custom payload for user question
-      agent.add("")
+      agent.add(simpleMSGFactor.rainFrequencySelector())
+      agent.add(lineMSGFactory.rainFrequencySelector())
       return
     }
 
@@ -85,20 +92,10 @@ function handleSuggestionInput(agent) {
 
   // all inputs are set, ask for rice pests next
   // TODO: add custom payload for user question
-  agent.add("")
+  agent.add(simpleMSGFactor.pestSelector())
+  agent.add(lineMSGFactory.pestSelector())
 
 }
-
-/**
- * Handles when user finished inputting rice pests
- * @param {WebhookClient} agent An agent
- * @returns {void}
- */
-function pestInputFinished(agent) {
-  // TODO: add custom payload for user question
-  agent.add("")
-}
-
 
 /**
  * Handles user list input of rice pests during rice suggestion process
@@ -122,6 +119,17 @@ function handleSuggestionPestInput(agent) {
   
   agent.add("")
 
+}
+
+/**
+ * Handles when user finished inputting rice pests
+ * @param {WebhookClient} agent An agent
+ * @returns {void}
+ */
+function pestInputFinished(agent) {
+  // TODO: add custom payload for user question
+  agent.add(simpleMSGFactor.diseaseSelector())
+  agent.add(lineMSGFactory.diseaseSelector())
 }
 
 /**
@@ -170,8 +178,10 @@ function finallyGetRiceSuggestion(agent) {
 
   // TODO: add custom payload for user question
   let riceSuggestions = getRiceBreedSuggestion(factor)
-  agent.add(riceSuggestions.map(rice => rice.name + " (" + (rice.score * 100) + "%)").join(", "))
 
+  agent.add(simpleMSGFactor.riceSuggestionPremessage())
+  agent.add(lineMSGFactory.riceSuggestionMessage(riceSuggestions))
+  
 }
 
 /**

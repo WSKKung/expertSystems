@@ -1,4 +1,5 @@
 import dialogflow from "dialogflow-fulfillment";
+import { PLATFORMS } from "dialogflow-fulfillment/src/rich-responses/rich-response.js";
 import { RiceBreed } from "../../expert_system/rice_rules.js";
 import { publicFileURL } from "../../util/path.js";
 import { area, disease, pest, rainFrequency, riceType } from "../../expert_system/variables.js";
@@ -94,7 +95,7 @@ export class LineChatMsgFactory extends RiceSuggestorMessageFactory {
 			]
 		}
 
-		return new dialogflow.Payload( dialogflow.Platforms.LINE, message )
+		return new dialogflow.Payload( PLATFORMS.LINE, message, { sendAsMessage: true } )
 
 	}
 
@@ -104,7 +105,7 @@ export class LineChatMsgFactory extends RiceSuggestorMessageFactory {
 			
 		}
 		
-		return new dialogflow.Payload( dialogflow.Platforms.LINE, message )
+		return new dialogflow.Payload( PLATFORMS.LINE, message, { sendAsMessage: true } )
 	}
 
 	riceAreaSelector() {
@@ -148,7 +149,7 @@ export class LineChatMsgFactory extends RiceSuggestorMessageFactory {
 			]
 		}
 
-		return new dialogflow.Payload( dialogflow.Platforms.LINE, message )
+		return new dialogflow.Payload( PLATFORMS.LINE, message, { sendAsMessage: true } )
 	}
 
 	rainFrequencySelector() {
@@ -177,7 +178,7 @@ export class LineChatMsgFactory extends RiceSuggestorMessageFactory {
 			]
 		}
 		
-		return new dialogflow.Payload( dialogflow.Platforms.LINE, message )
+		return new dialogflow.Payload( PLATFORMS.LINE, message, { sendAsMessage: true } )
 	}
 
 	pestSelector() {
@@ -221,7 +222,7 @@ export class LineChatMsgFactory extends RiceSuggestorMessageFactory {
 			]
 		}
 
-		return new dialogflow.Payload( dialogflow.Platforms.LINE, message )
+		return new dialogflow.Payload( PLATFORMS.LINE, message, { sendAsMessage: true } )
 
 	}
 
@@ -281,12 +282,11 @@ export class LineChatMsgFactory extends RiceSuggestorMessageFactory {
 			]
 		}
 
-		return new dialogflow. Payload( dialogflow.Platforms.LINE, message )
+		return new dialogflow. Payload( PLATFORMS.LINE, message, { sendAsMessage: true } )
 
 	}
 
 	/**
-	 * Create a rice breed suggestion message.
 	 * @param {RiceBreed[]} rices A list of rice breed entry to suggest to user
 	 */
 	riceSuggestionMessage(rices) {
@@ -323,12 +323,53 @@ export class LineChatMsgFactory extends RiceSuggestorMessageFactory {
 			message.template.columns.push(entry)
 		}
 
-		return new dialogflow.Payload( dialogflow.Platforms.LINE, message )
+		return new dialogflow.Payload( PLATFORMS.LINE, message, { sendAsMessage: true } )
 	}
 
 }
 
-// TODO: Implement generic message responses
 // Simple custom message creation handler that should be compatable with all platforms
-class SimpleMessageFactory extends RiceSuggestorMessageFactory {
+export class SimpleMessageFactory extends RiceSuggestorMessageFactory {
+	
+	riceTypeSelector() { 
+		return "ได้เลยสิ! ว่าแต่หนูอยากปลูกข้าวพันธ์ุไหนรึ? (ข้าวเจ้า, ข้าวเหนียว, ข้าวญี่ปุ่น, ข้าวบาร์เลย์, ข้าวสาลี)"
+	}
+
+	provinceSelector() {
+		return "แล้ว...อยากปลูกที่จังหวัดอะไรล่ะ?"
+	}
+
+	riceSeasonSelector() { 
+		return "อยากจะปลูกในฤดูไหนดีล่ะ? (นาปี, นาปรัง)"
+	}
+
+	riceAreaSelector() { 
+		return "แล้วพื้นที่นาเป็นแบบไหนล่ะไอหนู? (นาชลประทาน, นาน้ำฝน, นาข้าวน้ำขึ้น, นาไร่, นาที่สูง)"
+	}
+	rainFrequencySelector() { 
+		return "ที่นั่นฝนตกมากมั้ย? (ฝนมาก, ฝนปานกลาง, ฝนน้อย)"
+	}
+
+	pestSelector() { 
+		return ""
+	}
+
+	diseaseSelector() { 
+		return ""
+	}
+
+	/**
+	 * @param {RiceBreed[]} rices A list of rice breed entry to suggest to user
+	 */
+	riceSuggestionMessage(rices) {
+		return rices.map(rice => rice.name).join(", ")
+	}
+
+	/**
+	 * @return {String} Message
+	 */
+	riceSuggestionPremessage() {
+		return "Bruh"
+	}
+
 }
