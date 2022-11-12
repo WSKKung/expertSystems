@@ -5,14 +5,22 @@ export class Scorer {
 
 	/**
 	 * Create a scorer
-	 * @param {Criterion[]} criteria 
+	 * @param {Criterion[]} criteria criteria
+	 * @param {Number} bias bias
 	 */
-	constructor(criteria) {
+	constructor(criteria, bias = 0) {
 
 		this.criteria = criteria
-		this.totalWeight = this.criteria
-			.map(c => c.weight)
-			.reduce((a, b) => a + b)
+		this.bias = bias
+		this.totalWeight = this.bias
+
+		for (let criterion of this.criteria) {
+			this.totalWeight += criterion.getMaxWeight()
+		}
+
+		if (this.totalWeight == 0) {
+			throw new Error("Total weight of this scorer must not be zero!")
+		}
 
 		Object.freeze(this)
 
@@ -20,20 +28,20 @@ export class Scorer {
 
 	/**
 	 * Scores a given factor
-	 * @param {*} factor  a factor
+	 * @param {*} factor a factor
 	 * @return {Number} A number between 0-1
 	 */
 	score(factor) {
 
-		let score = this.criteria
-			.filter(c => c.test(factor))
-			.map(c => c.weight)
-			.reduce((a, b) => a + b, 0)
+		let score = this.bias
+
+		for (let criterion of this.criteria) {
+			score += criterion.getWeight(factor)
+		}
 
 		return score / this.totalWeight
 
 	}
-
 }
 
 export class Criterion {
@@ -52,11 +60,13 @@ export class Criterion {
 	 * new Criterion({ either: [ { a: 1 }, { b: 2 } ] }).test({ a: 4, b: 2 }) // true 
 	 * new Criterion({ all: [ { a: 1 }, { b: 2 } ] }).test({ a: 4, b: 2 }) // false 
 	 * new Criterion({ not: { a: 1 } }).test({ a: 1, b: 2 }) // false 
-	 * @param {Number} weight A weight of the criterion, should be > 0
+	 * @param {Number} passWeight A weight to apply if the criterion test passed
+	 * @param {Number} failWeight A weight to apply if the criterion test failed
 	 *  */ 
-	constructor(criterion, weight = 1) {
+	constructor(criterion, passWeight = 1, failWeight = 0) {
 
-		this.weight = weight
+		this.passWeight = passWeight
+		this.failWeight = failWeight
 
 		/**
 		 * build Condition object from a given criterion object in JSON format
@@ -65,6 +75,7 @@ export class Criterion {
 		 */
 		function buildConditions(criterion) {
 			
+			/** @type {{ name: String, action: (subcriteria: any) => Condition }[]} */
 			const reservedKeywords = [
 				{
 					name: "all",
@@ -104,11 +115,12 @@ export class Criterion {
 
 			let newCondition = null
 
-			reservedKeywords.forEach(keyword => {
-				if (criterion[keyword.name]) {
-					newCondition = keyword.action(criterion[keyword.name])		
+			for (let keyword of reservedKeywords) {
+				let curCriterion = criterion[keyword.name]
+				if (curCriterion) {
+					newCondition = keyword.action(curCriterion)		
 				}
-			})
+			}
 
 			if (!newCondition) {
 				newCondition = new AllMatchCondition(criterion)
@@ -126,20 +138,39 @@ export class Criterion {
 
 	/**
 	 * Test if a given factor object matches the condition
-	 * @param {*} factor 
+	 * @param {*} factor Factor object to check
 	 * @return { Boolean } True if the condition are met
 	 */
 	test(factor) {
 		return this.condition.test(factor)
 	}
 
+	/**
+	 * Get weight value for a given factor
+	 * @param {*} factor Factor object to check
+	 * @return { Number } A weight value
+	 */
+	getWeight(factor) {
+		return this.test(factor) ? this.passWeight : this.failWeight
+	}
+
+	/**
+	 * Get maximum weight of this criterion no matter the test result
+	 * @return { Number } A weight value
+	 */
+	getMaxWeight() {
+		return Math.max([ this.passWeight, this.failWeight ]) 
+	}
+
 }
 
 export class ScorerBuilder {
 
-	constructor() {
-		this.criteria = []
-	}
+	/** @type {Criterion[]} */
+	criteria = []
+
+	/** @type {Number} */
+	bias = 0
 
 	/**
 	 * Add a new criterion to the scorer
@@ -157,10 +188,21 @@ export class ScorerBuilder {
 	 * new Criterion({ all: [ { a: 1 }, { b: 2 } ] }).test({ a: 4, b: 2 }) // false 
 	 * @see Criterion
 	 * @param {Number} weight A weight of the criterion, should be > 0
+	 * @returns {this} This builder
 	 *  */ 
 	add(criterion, weight) {
 		let newCriterion = new Criterion(criterion, weight)
 		this.criteria.push(newCriterion)
+		return this
+	}
+
+	/**
+	 * Add bias value that will be always applied on scoring process
+	 * @param {Number} value Bias value to apply
+	 * @returns {this} This builder
+	 */
+	bias(value) {
+		this.bias += value
 		return this
 	}
 
