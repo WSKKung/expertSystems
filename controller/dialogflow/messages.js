@@ -296,7 +296,7 @@ export class LineChatMsgFactory extends RiceSuggestorMessageFactory {
 			]
 		}
 
-		return new newPayload( "LINE", message, { sendAsMessage: true } )
+		return new Payload( "LINE", message, { sendAsMessage: true } )
 
 	}
 
@@ -383,7 +383,7 @@ export class SimpleMessageFactory extends RiceSuggestorMessageFactory {
 	 * @return {String} Message
 	 */
 	riceSuggestionPremessage() {
-		return "Bruh"
+		return "แนะนำข้าว"
 	}
 
 }

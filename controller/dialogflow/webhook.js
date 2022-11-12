@@ -51,7 +51,6 @@ function handleSuggestionInput(agent) {
     // TODO: add custom payload for user question
     agent.add(simpleMSGFactor.riceSeasonSelector())
     agent.add(lineMSGFactory.riceSeasonSelector())
-    agent.add("")
     return
   }
 
@@ -60,7 +59,6 @@ function handleSuggestionInput(agent) {
     // TODO: add custom payload for user question
     agent.add(simpleMSGFactor.riceAreaSelector())
     agent.add(lineMSGFactory.riceAreaSelector())
-    agent.add("")
     return
   }
 
@@ -181,7 +179,7 @@ function finallyGetRiceSuggestion(agent) {
 
   agent.add(simpleMSGFactor.riceSuggestionPremessage())
   agent.add(lineMSGFactory.riceSuggestionMessage(riceSuggestions))
-  
+
 }
 
 /**
