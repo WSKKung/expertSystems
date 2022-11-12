@@ -38,7 +38,6 @@ export class Scorer {
 		for (let criterion of this.criteria) {
 			score += criterion.getWeight(factor)
 		}
-
 		return score / this.totalWeight
 
 	}
@@ -159,7 +158,7 @@ export class Criterion {
 	 * @return { Number } A weight value
 	 */
 	getMaxWeight() {
-		return Math.max([ this.passWeight, this.failWeight ]) 
+		return Math.max(this.passWeight, this.failWeight) 
 	}
 
 }
@@ -187,11 +186,12 @@ export class ScorerBuilder {
 	 * new Criterion({ either: [ { a: 1 }, { b: 2 } ] }).test({ a: 4, b: 2 }) // true 
 	 * new Criterion({ all: [ { a: 1 }, { b: 2 } ] }).test({ a: 4, b: 2 }) // false 
 	 * @see Criterion
-	 * @param {Number} weight A weight of the criterion, should be > 0
+	 * @param {Number} passWeight A weight of the criterion if passed, default to 1
+	 * @param {Number} failWeight A weight of the criterion if failed, default to 0
 	 * @returns {this} This builder
 	 *  */ 
-	add(criterion, weight) {
-		let newCriterion = new Criterion(criterion, weight)
+	add(criterion, passWeight = 1, failWeight = 0) {
+		let newCriterion = new Criterion(criterion, passWeight, failWeight)
 		this.criteria.push(newCriterion)
 		return this
 	}
@@ -211,7 +211,7 @@ export class ScorerBuilder {
 	 * @return {Scorer} A new scorer
 	 */
 	build() {
-		return new Scorer(this.criteria)
+		return new Scorer(this.criteria, this.bias)
 	}
 
 }
