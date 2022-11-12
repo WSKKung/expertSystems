@@ -7,6 +7,7 @@ export const context = {
 export const intent = {
 	riceSuggest: 'แนะนำข้าว',
 	inputPestForSuggestion: 'แนะนำข้าว - เลือกศัตรูพืช',
+	confirmPestInputForSuggestion: 'แนะนำข้าว - เลือกศัตรูพืช - ยืนยัน',
 	inputDiseaseForSuggestion: 'แนะนำข้าว - เลือกโรคพืช',
 	confirmSuggestion: 'แนะนำข้าว - เลือกโรคพืช - ยืนยัน',
 }
