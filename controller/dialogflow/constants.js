@@ -5,11 +5,18 @@ export const context = {
 }
 
 export const intent = {
-	riceSuggest: 'แนะนำข้าว',
-	inputPestForSuggestion: 'แนะนำข้าว - เลือกศัตรูพืช',
-	confirmPestInputForSuggestion: 'แนะนำข้าว - เลือกศัตรูพืช - ยืนยัน',
-	inputDiseaseForSuggestion: 'แนะนำข้าว - เลือกโรคพืช',
-	confirmSuggestion: 'แนะนำข้าว - เลือกโรคพืช - ยืนยัน',
+	suggestRice: {
+		main: 'แนะนำข้าว',
+		rainFrequencyInput: 'แนะนำข้าว - เลือกปริมาณฝน',
+		pests: {
+			input: 'แนะนำข้าว - เลือกศัตรูพืช',
+			confirm: 'แนะนำข้าว - เลือกศัตรูพืช - ยืนยัน'
+		},
+		diseases: {
+			input: 'แนะนำข้าว - เลือกโรคพืช',
+			confirm: 'แนะนำข้าว - เลือกโรคพืช - ยืนยัน'
+		}
+	}
 }
 
 export const contextParams = {

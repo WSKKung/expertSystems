@@ -11,11 +11,11 @@ import { LineChatMsgFactory } from "./messages.js"
 export function fullfillmentRequest(req, res) {
   let agent = new WebhookClient({ request: req, response: res })
   let intentMap = new Map()
-  intentMap.set(intent.riceSuggest, handleSuggestionInput)
-  intentMap.set(intent.inputPestForSuggestion, handleSuggestionPestInput)
-  intentMap.set(intent.confirmPestInputForSuggestion, pestInputFinished)
-  intentMap.set(intent.inputDiseaseForSuggestion, handleSuggestionDiseaseInput)
-  intentMap.set(intent.confirmSuggestion, finallyGetRiceSuggestion)
+  intentMap.set(intent.suggestRice.main, handleSuggestionInput)
+  intentMap.set(intent.suggestRice.pests.input, handleSuggestionPestInput)
+  intentMap.set(intent.suggestRice.pests.confirm, pestInputFinished)
+  intentMap.set(intent.suggestRice.diseases.input, handleSuggestionDiseaseInput)
+  intentMap.set(intent.suggestRice.diseases.confirm, finallyGetRiceSuggestion)
   agent.handleRequest(intentMap)
 }
 
