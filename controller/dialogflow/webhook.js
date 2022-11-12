@@ -152,7 +152,7 @@ function handleSuggestionDiseaseInput(agent) {
  */
 function finallyGetRiceSuggestion(agent) {
 
-  let ctx = agent.context.get(ctx.recommending)
+  let ctx = agent.context.get(context.recommending)
   let params = ctx.parameters
 
   let factor = {
@@ -167,7 +167,7 @@ function finallyGetRiceSuggestion(agent) {
 
   // TODO: add custom payload for user question
   let riceSuggestions = getRiceBreedSuggestion(factor)
-  agent.add(riceSuggestions.map(rice => rice.name).join(", "))
+  agent.add(riceSuggestions.map(rice => rice.name + " (" + (rice.score * 100) + "%)").join(", "))
 
 }
 
