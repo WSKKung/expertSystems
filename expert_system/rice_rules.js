@@ -33,7 +33,7 @@ export class RiceBreed {
   }
 }
 
-// Map[riceType -> Map[ riceBreed, scorer ]]
+/** @type {Map<String,Map<String,Scorer>>} */
 const riceScorers = new Map()
 
 /**
