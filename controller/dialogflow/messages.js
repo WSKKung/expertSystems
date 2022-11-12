@@ -1,7 +1,8 @@
 import dialogflow from "dialogflow-fulfillment";
 import { RiceBreed } from "../../expert_system/rice_rules.js";
 import { publicFileURL } from "../../util/path.js";
-import { area, riceType } from "../../expert_system/variables.js";
+import { area, disease, pest, rainFrequency, riceType } from "../../expert_system/variables.js";
+import { getURIToRiceDetail, getURIToRiceImage } from "../../expert_system/rice_details.js";
 
 // I should just use Typescript lol
 
@@ -60,6 +61,7 @@ export class LineChatMsgFactory extends RiceSuggestorMessageFactory {
 	riceTypeSelector() {
 
 		let message = {
+			type: "imagemap",
 			baseUrl: publicFileURL("img/rice_type_selector.png"),
 			altText: "Select rice type",
 			baseSize: {
@@ -136,6 +138,7 @@ export class LineChatMsgFactory extends RiceSuggestorMessageFactory {
 	riceAreaSelector() {
 
 		let message = {
+			type: "imagemap",
 			baseUrl: publicFileURL("img/rice_area_selector.png"),
 			altText: "Select rice type",
 			baseSize: {
@@ -212,7 +215,45 @@ export class LineChatMsgFactory extends RiceSuggestorMessageFactory {
 	rainFrequencySelector() {
 
 		let message = {
-			
+			type: "imagemap",
+			baseUrl: publicFileURL("img/rain_frequency_selector.png"),
+			altText: "Select rice type",
+			baseSize: {
+				width: 1040,
+				height: 1040
+			},
+			actions: [
+				{
+					type: "message",
+					text: rainFrequency.high,
+					area: {
+						x: 32,
+						y: 439,
+						width: 306,
+						height: 306
+					}
+				},
+				{
+					type: "message",
+					text: rainFrequency.average,
+					area: {
+						x: 368,
+						y: 439,
+						width: 306,
+						height: 306
+					}
+				},
+				{
+					type: "message",
+					text: rainFrequency.low,
+					area: {
+						x: 704,
+						y: 439,
+						width: 306,
+						height: 306
+					}
+				}
+			]
 		}
 		
 		return new dialogflow.Payload( dialogflow.Platforms.LINE, message )
@@ -221,7 +262,25 @@ export class LineChatMsgFactory extends RiceSuggestorMessageFactory {
 	pestSelector() {
 
 		let message = {
-			
+			type: "imagemap",
+			baseUrl: publicFileURL("img/rice_pest_selector.png"),
+			altText: "Select rice type",
+			baseSize: {
+				width: 1040,
+				height: 1040
+			},
+			actions: [
+				{
+					type: "message",
+					text: pest.brownPlanthopper,
+					area: {
+						x: 32,
+						y: 439,
+						width: 306,
+						height: 306
+					}
+				}
+			]
 		}
 
 		return new dialogflow.Payload( dialogflow.Platforms.LINE, message )
@@ -231,10 +290,28 @@ export class LineChatMsgFactory extends RiceSuggestorMessageFactory {
 	diseaseSelector() {
 
 		let message = {
-			
+			type: "imagemap",
+			baseUrl: publicFileURL("img/rice_disease_selector.png"),
+			altText: "Select rice type",
+			baseSize: {
+				width: 1040,
+				height: 1040
+			},
+			actions: [
+				{
+					type: "message",
+					text: disease.blast,
+					area: {
+						x: 32,
+						y: 439,
+						width: 306,
+						height: 306
+					}
+				}
+			]
 		}
 
-		return newdialogflow. Payload( dialogflow.Platforms.LINE, message )
+		return new dialogflow. Payload( dialogflow.Platforms.LINE, message )
 
 	}
 
@@ -244,13 +321,44 @@ export class LineChatMsgFactory extends RiceSuggestorMessageFactory {
 	 */
 	riceSuggestionMessage(rices) {
 		
+		let message = {
+			type: "template",
+			altText: "Rice suggestions list",
+			template: {
+			  type: "carousel",
+			  columns: []
+			}
+		}
+
+		/**
+		 * Create entry for a carousel template message
+		 * @param {RiceBreed} rice Rice
+		 */
+		function createRiceCarouselEntry(rice) {
+			return {
+				thumbnailImageUrl: getURIToRiceImage(rice),
+				title: rice.name,
+				actions: [
+					{
+						type: "url",
+						label: "รายละเอียด",
+						uri: getURIToRiceDetail(rice)
+					}
+				]
+			}
+		}
+
+		for (let rice of rices) {
+			let entry = createRiceCarouselEntry(rice)
+			message.template.columns.push(entry)
+		}
+
+		return new dialogflow.Payload( dialogflow.Platforms.LINE, message )
 	}
 
 }
 
+// TODO: Implement generic message responses
 // Simple custom message creation handler that should be compatable with all platforms
-export class SimpleMessageFactory extends RiceSuggestorMessageFactory {
-
-
-
+class SimpleMessageFactory extends RiceSuggestorMessageFactory {
 }
