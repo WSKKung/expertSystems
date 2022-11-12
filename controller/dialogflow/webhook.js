@@ -1,6 +1,7 @@
 import { WebhookClient } from "dialogflow-fulfillment"
 import { getRiceBreedSuggestion, canInferWaterLevel } from "../../expert_system/expert_system.js"
 import { context, contextParams, intent } from "./constants.js"
+import { LineChatMsgFactory } from "./messages.js"
 
 /**
  * Accept fulfillment request from Dialogflow.
@@ -26,10 +27,12 @@ export function fullfillmentRequest(req, res) {
 function handleSuggestionInput(agent) {
 
   let params = agent.parameters
+  let lineMSGFactory = new LineChatMsgFactory()
 
   // Ask rice type
   if (!params.riceType) {
     // TODO: add custom payload for user question
+    agent.add(lineMSGFactory.riceTypeSelector())
     agent.add("")
     return
   }
