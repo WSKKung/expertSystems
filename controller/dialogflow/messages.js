@@ -1,5 +1,4 @@
-import dialogflow from "dialogflow-fulfillment";
-import { PLATFORMS } from "dialogflow-fulfillment/src/rich-responses/rich-response.js";
+import { Payload } from "dialogflow-fulfillment";
 import { RiceBreed } from "../../expert_system/rice_rules.js";
 import { publicFileURL } from "../../util/path.js";
 import { area, disease, pest, rainFrequency, riceType } from "../../expert_system/variables.js";
@@ -95,17 +94,32 @@ export class LineChatMsgFactory extends RiceSuggestorMessageFactory {
 			]
 		}
 
-		return new dialogflow.Payload( PLATFORMS.LINE, message, { sendAsMessage: true } )
+		return new Payload( "LINE", message, { sendAsMessage: true } )
 
 	}
 
 	riceSeasonSelector() {
 
 		let message = {
-			
+			type: "imagemap",
+			baseUrl: publicFileURL("img/rice_season_selector.png"),
+			altText: "Select rice type",
+			baseSize: { width: 1040, height: 1040 },
+			actions: [
+				{
+					type: "message",
+					text: area.irrigatedLowland,
+					area: { x: 29, y: 385, width: 466, height: 466 }
+				},
+				{
+					type: "message",
+					text: area.rainfedLowland,
+					area: { x: 542, y: 385, width: 466, height: 466 }
+				}
+			]
 		}
 		
-		return new dialogflow.Payload( PLATFORMS.LINE, message, { sendAsMessage: true } )
+		return new dialogflow.Payload( "LINE", message, { sendAsMessage: true } )
 	}
 
 	riceAreaSelector() {
@@ -149,7 +163,7 @@ export class LineChatMsgFactory extends RiceSuggestorMessageFactory {
 			]
 		}
 
-		return new dialogflow.Payload( PLATFORMS.LINE, message, { sendAsMessage: true } )
+		return new Payload( "LINE", message, { sendAsMessage: true } )
 	}
 
 	rainFrequencySelector() {
@@ -178,7 +192,7 @@ export class LineChatMsgFactory extends RiceSuggestorMessageFactory {
 			]
 		}
 		
-		return new dialogflow.Payload( PLATFORMS.LINE, message, { sendAsMessage: true } )
+		return new Payload( "LINE", message, { sendAsMessage: true } )
 	}
 
 	pestSelector() {
@@ -222,7 +236,7 @@ export class LineChatMsgFactory extends RiceSuggestorMessageFactory {
 			]
 		}
 
-		return new dialogflow.Payload( PLATFORMS.LINE, message, { sendAsMessage: true } )
+		return new Payload( "LINE", message, { sendAsMessage: true } )
 
 	}
 
@@ -282,7 +296,7 @@ export class LineChatMsgFactory extends RiceSuggestorMessageFactory {
 			]
 		}
 
-		return new dialogflow. Payload( PLATFORMS.LINE, message, { sendAsMessage: true } )
+		return new newPayload( "LINE", message, { sendAsMessage: true } )
 
 	}
 
@@ -323,7 +337,7 @@ export class LineChatMsgFactory extends RiceSuggestorMessageFactory {
 			message.template.columns.push(entry)
 		}
 
-		return new dialogflow.Payload( PLATFORMS.LINE, message, { sendAsMessage: true } )
+		return new Payload( "LINE", message, { sendAsMessage: true } )
 	}
 
 }
@@ -351,11 +365,11 @@ export class SimpleMessageFactory extends RiceSuggestorMessageFactory {
 	}
 
 	pestSelector() { 
-		return ""
+		return "Input pests"
 	}
 
 	diseaseSelector() { 
-		return ""
+		return "Input diseases"
 	}
 
 	/**
