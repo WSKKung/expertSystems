@@ -138,7 +138,7 @@ export const pest = {
 	greenLeafhopper: 'จักจั่นสีเขียว',
 	stemBorer: 'หนอนกอ',
 	riceGallMidge: 'แมลงบั่ว',
-  nematodes: 'ใส้เดือนฝอย'
+  	nematodes: 'ใส้เดือนฝอย'
 }
 
 // โรคพืช
