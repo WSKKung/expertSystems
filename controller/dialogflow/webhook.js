@@ -33,7 +33,6 @@ function handleSuggestionInput(agent) {
 
   // Ask rice type
   if (!params.riceType) {
-    // TODO: add custom payload for user question
     agent.add(simpleMSGFactor.riceTypeSelector())
     agent.add(lineMSGFactory.riceTypeSelector())
     return
@@ -41,14 +40,12 @@ function handleSuggestionInput(agent) {
 
   // Ask province
   if (!params.province) {
-    // TODO: add custom payload for user question
     agent.add(simpleMSGFactor.provinceSelector())
     return
   }
 
   // Ask season
   if (!params.season) {
-    // TODO: add custom payload for user question
     agent.add(simpleMSGFactor.riceSeasonSelector())
     agent.add(lineMSGFactory.riceSeasonSelector())
     return
@@ -56,7 +53,6 @@ function handleSuggestionInput(agent) {
 
   // Ask area
   if (!params.riceArea) {
-    // TODO: add custom payload for user question
     agent.add(simpleMSGFactor.riceAreaSelector())
     agent.add(lineMSGFactory.riceAreaSelector())
     return
@@ -80,7 +76,6 @@ function handleSuggestionInput(agent) {
     
    // Ask rain Frequency
     else {
-      // TODO: add custom payload for user question
       agent.add(simpleMSGFactor.rainFrequencySelector())
       agent.add(lineMSGFactory.rainFrequencySelector())
       return
@@ -89,7 +84,6 @@ function handleSuggestionInput(agent) {
   }
 
   // all inputs are set, ask for rice pests next
-  // TODO: add custom payload for user question
   agent.add(simpleMSGFactor.pestSelector())
   agent.add(lineMSGFactory.pestSelector())
 
@@ -125,7 +119,6 @@ function handleSuggestionPestInput(agent) {
  * @returns {void}
  */
 function pestInputFinished(agent) {
-  // TODO: add custom payload for user question
   agent.add(simpleMSGFactor.diseaseSelector())
   agent.add(lineMSGFactory.diseaseSelector())
 }
@@ -174,11 +167,14 @@ function finallyGetRiceSuggestion(agent) {
     diseases: params[contextParams.diseases]
   }
 
-  // TODO: add custom payload for user question
   let riceSuggestions = getRiceBreedSuggestion(factor)
 
-  agent.add(simpleMSGFactor.riceSuggestionPremessage())
-  agent.add(lineMSGFactory.riceSuggestionMessage(riceSuggestions))
+  if (agent.requestSource === "LINE") {
+    agent.add(simpleMSGFactor.riceSuggestionPremessage())
+    agent.add(lineMSGFactory.riceSuggestionMessage(riceSuggestions))
+  } else {
+    agent.add(simpleMSGFactor.riceSuggestionMessage(riceSuggestions))
+  }
 
 }
 
