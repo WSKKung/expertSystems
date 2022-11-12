@@ -50,6 +50,21 @@ export function getRiceBreedSuggestion(factor) {
 
 }
 
+const waterLevelInferableArea = [
+	V.area.irrigatedLowland, 
+	V.area.floating, 
+	V.area.deepwater
+]
+
+/**
+ * Check if water level can be inferred from the given area
+ * @param {string} area An area name
+ * @returns {Boolean} true if water level can be inferred from the given area
+ */
+export function canInferWaterLevel(area) {
+	return waterLevelInferableArea.includes(area)
+}
+
 const provincePerRegions = new Map()
 
 provincePerRegions.set(V.region.north, [
