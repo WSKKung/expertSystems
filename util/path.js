@@ -1,5 +1,5 @@
 import { dirname, join, resolve } from 'path'
-import { fileURLToPath } from 'url'
+import { fileURLToPath, pathToFileURL } from 'url'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -7,6 +7,11 @@ const __dirname = dirname(__filename)
 export const root = resolve(__dirname, '..')
 export const publicFolder = resolve(root, 'public')
 
-export function publicFilePath(file) {
-	return join(publicFolder, 'img', file)
+/**
+ * 
+ * @param {String} filePath relative path to file from public folder
+ * @returns {URL} Full URL to file
+ */
+export function publicFileURL(filePath) {
+	return pathToFileURL(join(publicFolder, filePath))
 }
