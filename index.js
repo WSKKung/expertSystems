@@ -12,5 +12,6 @@ const port = 8081
 app.use(express.static(publicFolder))
 
 app.listen(port, () => {
+  console.log(process.env.hostname)
   console.log(`listening on port http://localhost:${port}`)
 })

@@ -16,7 +16,7 @@ export function getURIToRiceDetail(rice) {
  * @return {String} URI String to PDF for the details of the rices
  */
 export function getURIToRiceImage(rice) {
-	return publicFileURL("img/rices/" + rice.name + ".png").toString()
+	return process.env.hostname + "/img/rices/" + rice.name + ".png"
 }
 
 const riceDetailURLs = new Map()
