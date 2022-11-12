@@ -1,6 +1,5 @@
 import { WebhookClient } from "dialogflow-fulfillment"
-import { area } from "./../../expert_system/variables.js"
-import { getRiceBreedSuggestion } from "../../expert_system/expert_system.js"
+import { getRiceBreedSuggestion, canInferWaterLevel } from "../../expert_system/expert_system.js"
 import { context, contextParams, intent } from "./constants.js"
 
 /**
@@ -13,6 +12,7 @@ export function fullfillmentRequest(req, res) {
   let intentMap = new Map()
   intentMap.set(intent.riceSuggest, handleSuggestionInput)
   intentMap.set(intent.inputPestForSuggestion, handleSuggestionPestInput)
+  intentMap.set(intent.confirmPestInputForSuggestion, pestInputFinished)
   intentMap.set(intent.inputDiseaseForSuggestion, handleSuggestionDiseaseInput)
   intentMap.set(intent.confirmSuggestion, finallyGetRiceSuggestion)
   agent.handleRequest(intentMap)
@@ -27,27 +27,75 @@ function handleSuggestionInput(agent) {
 
   let params = agent.parameters
 
-  // default to DialogFlow console messages if strictly required params are missing
-  if (!params.riceType || !params.province || !params.season || !params.riceArea) {
+  // Ask rice type
+  if (!params.riceType) {
+    // TODO: add custom payload for user question
     agent.add("")
     return
   }
 
-  // rain frequency can be ignored on the following area, so we can skip to ask a pest
-  if ([area.irrigatedLowland, area.floating, area.deepwater].includes(params.riceArea)) {
-    // clear all contexts, including auto-generated one (from required fields)
-    clearAgentContexts(agent)
-    // and then set new one with given params
-    agent.context.set(context.recommending, 10, params)
-    agent.context.set(context.inputPest, 2, params)
+  // Ask province
+  if (!params.province) {
+    // TODO: add custom payload for user question
     agent.add("")
     return
   }
 
-  // fallback to Dialogflow console default
+  // Ask season
+  if (!params.season) {
+    // TODO: add custom payload for user question
+    agent.add("")
+    return
+  }
+
+  // Ask area
+  if (!params.riceArea) {
+    // TODO: add custom payload for user question
+    agent.add("")
+    return
+  }
+
+  if (!params.rainFrequency) {
+      
+    // Skip to pest because rain frequency is not necessary for the following area
+    if (canInferWaterLevel(params.riceArea)) {
+
+      // clear all contexts, including auto-generated one (from required fields)
+      clearAgentContexts(agent)
+
+      // and then set new one with given params
+      agent.context.set(context.recommending, 10, params)
+      agent.context.set(context.inputPest, 2, params)
+
+      // no return since we will be fallback to case where all inputs are set
+      
+    } 
+    
+   // Ask rain Frequency
+    else {
+      // TODO: add custom payload for user question
+      agent.add("")
+      return
+    }
+
+  }
+
+  // all inputs are set, ask for rice pests next
+  // TODO: add custom payload for user question
   agent.add("")
 
 }
+
+/**
+ * Handles when user finished inputting rice pests
+ * @param {WebhookClient} agent An agent
+ * @returns {void}
+ */
+function pestInputFinished(agent) {
+  // TODO: add custom payload for user question
+  agent.add("")
+}
+
 
 /**
  * Handles user list input of rice pests during rice suggestion process
@@ -104,19 +152,20 @@ function handleSuggestionDiseaseInput(agent) {
  */
 function finallyGetRiceSuggestion(agent) {
 
-  let recommendingCtx = agent.context.get("recommending")
-  let recommendParams = recommendingCtx.parameters
+  let ctx = agent.context.get(ctx.recommending)
+  let params = ctx.parameters
 
   let factor = {
-    riceType: recommendParams[contextParams.riceType],
-    province: recommendParams[contextParams.province],
-    inSeason: recommendParams[contextParams.inSeason],
-    area: recommendParams[contextParams.area],
-    rainFrequency: recommendParams[contextParams.rainFrequency],
-    pests: recommendParams[contextParams.pests],
-    diseases: recommendParams[contextParams.diseases]
+    riceType: params[contextParams.riceType],
+    province: params[contextParams.province],
+    inSeason: params[contextParams.inSeason],
+    area: params[contextParams.area],
+    rainFrequency: params[contextParams.rainFrequency],
+    pests: params[contextParams.pests],
+    diseases: params[contextParams.diseases]
   }
 
+  // TODO: add custom payload for user question
   let riceSuggestions = getRiceBreedSuggestion(factor)
   agent.add(riceSuggestions.map(rice => rice.name).join(", "))
 
