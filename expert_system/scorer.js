@@ -3,7 +3,10 @@ import { AllMatchCondition, AndCondition, InverseCondition, OrCondition, Conditi
 // a class which rates a given factor by a number in between 0-1
 export class Scorer {
 
-	// criteria should be an array of Criterion
+	/**
+	 * Create a scorer
+	 * @param {Criterion[]} criteria 
+	 */
 	constructor(criteria) {
 
 		this.criteria = criteria
@@ -38,16 +41,17 @@ export class Criterion {
 	/**
 	 * @param {Object} criterion An object that specify the value of fields to check,
 	 * 					you can also nest a list of subcriteria by using the 
-	 * 					reserved fields `either` and `all` (case-sensitive).
+	 * 					reserved fields `either`, `all`, `not` (case-sensitive).
 	 * 					The results of each subcriteria will then be joined
-	 * 					with an OR operator for `either`, and AND operator
-	 * 					for `all`.
+	 * 					with an OR operator for `either`, AND operator
+	 * 					for `all`. All the result will be reversed with `not`.
 	 * @example 
 	 * new Criterion({ a: 1, b: 2 }).test({ a: 1, b: 2, c: 3 }) // true 
 	 * new Criterion({ a: 1, b: 2 }).test({ a: 4, b: 2 }) // false 
 	 * new Criterion({ a: 1, b: 2 }).test({ }) // false 
 	 * new Criterion({ either: [ { a: 1 }, { b: 2 } ] }).test({ a: 4, b: 2 }) // true 
 	 * new Criterion({ all: [ { a: 1 }, { b: 2 } ] }).test({ a: 4, b: 2 }) // false 
+	 * new Criterion({ not: { a: 1 } }).test({ a: 1, b: 2 }) // false 
 	 * @param {Number} weight A weight of the criterion, should be > 0
 	 *  */ 
 	constructor(criterion, weight = 1) {
