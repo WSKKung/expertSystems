@@ -1,11 +1,12 @@
 {
-  "name": "expertsystems",
+  "name": "lungrice-webhook",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "serve": "nodemon index.js"
+    "serve": "node index.js",
+    "test": "nodemon index.js"
   },
   "author": "",
   "license": "ISC",
