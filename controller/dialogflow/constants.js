@@ -19,7 +19,7 @@ export const intent = {
 	}
 }
 
-export const contextParams = {
+export const entity = {
 	riceType: 'riceType',
     province: 'province',
     inSeason: 'season',

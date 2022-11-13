@@ -1,7 +1,7 @@
 import { WebhookClient } from "dialogflow-fulfillment"
 import { getRiceBreedSuggestion, canInferWaterLevel } from "../../expert_system/expert_system.js"
 import { getRiceByName } from "../../expert_system/rice_data.js"
-import { context, contextParams, intent } from "./constants.js"
+import { context, entity, intent } from "./constants.js"
 import { getMessageFactory } from "./messages.js"
 /**
  * Accept fulfillment request from Dialogflow.
@@ -93,15 +93,15 @@ function handleSuggestionPestInput(agent) {
   let responseMsgFactory = getMessageFactory(agent.requestSource)
 
   let params = agent.parameters
-  let inputPest = params[contextParams.inputPest]
-  let curRicePests = params[contextParams.pests] || []
+  let inputPest = params[entity.inputPest]
+  let curRicePests = params[entity.pests] || []
 
   // need to increase lifetime
   // because some reason the final context did not shown in the response without it
   if (!params.curRicePests.includes(inputPest)) {
     for (let ctx of agent.context) {
       ctx.lifetime += 1
-      ctx.parameters[contextParams.pests] = curRicePests.concat(inputPest)
+      ctx.parameters[entity.pests] = curRicePests.concat(inputPest)
     }
   }
 
@@ -129,15 +129,15 @@ function handleSuggestionDiseaseInput(agent) {
   let responseMsgFactory = getMessageFactory(agent.requestSource)
 
   let params = agent.parameters
-  let inputDisease = params[contextParams.diseases]
-  let curRiceDiseases = params[contextParams.diseases] || []
+  let inputDisease = params[entity.diseases]
+  let curRiceDiseases = params[entity.diseases] || []
 
   // need to increase lifetime
   // because some reason the final context did not shown in the response without it
   if (!params.curRiceDiseases.includes(inputDisease)) {
     for (let ctx of agent.context) {
       ctx.lifetime += 1
-      ctx.parameters[contextParams.diseases] = curRiceDiseases.concat(inputDisease)
+      ctx.parameters[entity.diseases] = curRiceDiseases.concat(inputDisease)
     }
   }
 
@@ -158,13 +158,13 @@ function finallyGetRiceSuggestion(agent) {
   let params = ctx.parameters
 
   let factor = {
-    riceType: params[contextParams.riceType],
-    province: params[contextParams.province],
-    inSeason: params[contextParams.inSeason],
-    area: params[contextParams.area],
-    rainFrequency: params[contextParams.rainFrequency],
-    pests: params[contextParams.pests],
-    diseases: params[contextParams.diseases]
+    riceType: params[entity.riceType],
+    province: params[entity.province],
+    inSeason: params[entity.inSeason],
+    area: params[entity.area],
+    rainFrequency: params[entity.rainFrequency],
+    pests: params[entity.pests],
+    diseases: params[entity.diseases]
   }
 
   let riceSuggestions = getRiceBreedSuggestion(factor)
@@ -179,7 +179,7 @@ function finallyGetRiceSuggestion(agent) {
  */
 function getRiceDetails(agent) {
   let responseMsgFactory = getMessageFactory(agent.requestSource)
-  let riceBreed = agent.parameters[contextParams.riceBreed]
+  let riceBreed = agent.parameters[entity.riceBreed]
   let rice = getRiceByName(riceBreed)
   agent.add(responseMsgFactory.riceDetailMessage(rice))
 }
