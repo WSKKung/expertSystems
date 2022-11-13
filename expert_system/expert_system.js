@@ -1,6 +1,9 @@
 import { getRiceScoreList, RiceBreed } from "./rice_rules.js"
 import * as V from "./variables.js"
 
+// Fixed commit name cuz I accidently commit & push with other unrelated commit
+// Version Control in repl.it sucks
+
 /**
  * Handles user list input of rice pests during rice suggestion process
  * @param {*} factor A factor object represents user input
