@@ -6,7 +6,7 @@ import { RiceBreed } from "./rice_rules.js";
  * @param {RiceBreed} rice rice
  * @return {String} URI String to PDF for the details of the rices
  */
-export function getURIToRiceDetail(rice) {
+export function getURLToRiceDetail(rice) {
   return "https://youtu.be/dQw4w9WgXcQ"
   //return riceDetailURLs.get(rice.name)
 }
@@ -16,10 +16,8 @@ export function getURIToRiceDetail(rice) {
  * @param {RiceBreed} rice rice
  * @return {String} URI String to PDF for the details of the rices
  */
-export function getURIToRiceImage(rice) {
-  return publicFileURL("/img/zen_smile.png")
-  //return publicFileURL("/img/rices/" + rice.name + ".png")
-  //return process.env.hostname + "/img/rices/" + rice.name + ".png"
+export function getURLToRiceImage(rice) {
+  return publicFileURL("/img/rices/" + rice.name + ".png")
 }
 
 const riceDetailURLs = new Map()

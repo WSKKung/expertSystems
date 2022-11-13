@@ -2,7 +2,7 @@ import { Payload } from "dialogflow-fulfillment";
 import { RiceBreed } from "../../expert_system/rice_rules.js";
 import { publicFileURL } from "../../util/path.js";
 import { area, inSeason, disease, pest, rainFrequency, riceType } from "../../expert_system/variables.js";
-import { getURIToRiceDetail, getURIToRiceImage } from "../../expert_system/rice_details.js";
+import { getURLToRiceDetail, getURLToRiceImage } from "../../expert_system/rice_details.js";
 
 // I should just use Typescript lol
 
@@ -31,11 +31,19 @@ export class RiceSuggestorMessageFactory {
   }
 
   /**
+   * Create DialogFlow response message to ask user to select a province
+   * @returns {String | Payload | (String | Payload)[]} Response object
+   */
+  provinceSelector() {
+    return "แล้ว...อยากปลูกที่จังหวัดอะไรล่ะ?"
+  }
+
+  /**
    * Create DialogFlow response message to ask user to select a season to plant rice (either in-season or off-season)
    * @returns {String | Payload | (String | Payload)[]} Response object
    */
   riceSeasonSelector() {
-    return "แล้ว...อยากปลูกที่จังหวัดอะไรล่ะ?" 
+    return "อยากจะปลูกในฤดูไหนดีล่ะ? (นาปี, นาปรัง)" 
   }
 
   /**
@@ -43,7 +51,7 @@ export class RiceSuggestorMessageFactory {
    * @returns {String | Payload | (String | Payload)[]} Response object
    */
   riceAreaSelector() {
-    return "อยากจะปลูกในฤดูไหนดีล่ะ? (นาปี, นาปรัง)"
+    return "แล้วพื้นที่นาเป็นแบบไหนล่ะไอหนู? (นาชลประทาน, นาน้ำฝน, นาข้าวขึ้นน้ำ, นาไร่, นาที่สูง)"
   }
 
   /**
@@ -236,7 +244,7 @@ export class LineChatMsgFactory extends RiceSuggestorMessageFactory {
     ]
   }
 
-  pestSelector(repeating) {
+  pestSelector(repeating = false) {
 
     if (repeating) {
       return super.pestSelector(repeating)
@@ -288,7 +296,7 @@ export class LineChatMsgFactory extends RiceSuggestorMessageFactory {
 
   }
 
-  diseaseSelector(repeating) {
+  diseaseSelector(repeating = false) {
 
     if (repeating) {
       return super.diseaseSelector(repeating)
@@ -375,14 +383,14 @@ export class LineChatMsgFactory extends RiceSuggestorMessageFactory {
      */
     function createRiceCarouselEntry(rice) {
       return {
-        thumbnailImageUrl: getURIToRiceImage(rice),
+        thumbnailImageUrl: getURLToRiceImage(rice),
         title: rice.name,
         text: (rice.score * 100) + "%",
         actions: [
           {
             type: "uri",
             label: "รายละเอียด",
-            uri: getURIToRiceDetail(rice)
+            uri: getURLToRiceDetail(rice)
           }
         ]
       }
