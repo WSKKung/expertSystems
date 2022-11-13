@@ -154,7 +154,7 @@ function finallyGetRiceSuggestion(agent) {
 
   let responseMsgFactory = getMessageFactory(agent.requestSource)
 
-  let ctx = agent.context.get(context.recommending)
+  let ctx = agent.context.get(context.recommendingFinished)
   let params = ctx.parameters
 
   let factor = {

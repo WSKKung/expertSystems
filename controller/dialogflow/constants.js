@@ -1,7 +1,8 @@
 export const context = {
 	recommending: 'recommending',
-	inputPest: 'input-pest',
-	inputDisease: 'input-disease'
+	inputPest: 'recommending-input-pest',
+	inputDisease: 'recommending-input-disease',
+	recommendingFinished: 'recommending-finished'
 }
 
 export const intent = {
