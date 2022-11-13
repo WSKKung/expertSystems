@@ -460,7 +460,7 @@ export class LineChatMsgFactory extends RiceSuggestMessageFactory {
     }
     return [
       rice.name + " งั้นเหรอ? ทำไมเราไม่ลองไปอ่านรายละเอียดที่ Link นี้หล่ะ!",
-      message
+      new Payload("LINE", message, { sendAsMessage: true })
     ]
   }
 
