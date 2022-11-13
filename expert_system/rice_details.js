@@ -7,8 +7,7 @@ import { RiceBreed } from "./rice_rules.js";
  * @return {String} URI String to PDF for the details of the rices
  */
 export function getURLToRiceDetail(rice) {
-  return "https://youtu.be/dQw4w9WgXcQ"
-  //return riceDetailURLs.get(rice.name)
+  return riceDetailURLs.get(rice.name)
 }
 
 /**
