@@ -9,18 +9,18 @@ import { Rice } from "../../expert_system/rice_data.js";
 /**
  * Get an appropiate message factory for given platform
  * @param {String} platform platform
- * @returns {RiceSuggestorMessageFactory} message factory
+ * @returns {RiceSuggestMessageFactory} message factory
  */
 export function getMessageFactory(platform) {
   switch (platform) {
     case "LINE":
       return new LineChatMsgFactory()
     default:
-      return new RiceSuggestorMessageFactory()
+      return new RiceSuggestMessageFactory()
   }
 }
 
-export class RiceSuggestorMessageFactory {
+export class RiceSuggestMessageFactory {
 
   /**
    * Create DialogFlow response message to ask user to select a rice type
@@ -117,7 +117,7 @@ export class RiceSuggestorMessageFactory {
 }
 
 // LINE custom message creation handler 
-export class LineChatMsgFactory extends RiceSuggestorMessageFactory {
+export class LineChatMsgFactory extends RiceSuggestMessageFactory {
 
   riceTypeSelector() {
 
