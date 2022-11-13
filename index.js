@@ -13,7 +13,7 @@ const port = 8081
 app.use(router)
 
 // Expose public folder for any requests
-app.use(express.static(publicFolder, { extensions: ['html', 'png'] }))
+app.use(express.static(publicFolder, { extensions: ['html', 'png', 'jpg'] }))
 app.use(cors())
 
 app.listen(port, () => {
