@@ -5,6 +5,7 @@ export const context = {
 }
 
 export const intent = {
+	getRiceDetail: 'สอบถามรายละเอียดพันธุ์ข้าว',
 	suggestRice: {
 		main: 'แนะนำข้าว',
 		pests: {
@@ -27,5 +28,6 @@ export const contextParams = {
     pests: 'curRicePests',
     diseases: 'curRiceDiseases',
 	inputPest: 'ricePest',
-	inputDisease: 'riceDisease'
+	inputDisease: 'riceDisease',
+	riceBreed: 'riceBreed'
 }

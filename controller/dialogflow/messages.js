@@ -102,6 +102,18 @@ export class RiceSuggestorMessageFactory {
   ricePresuggestMessage(rices) {
     return "จากที่ลุงลองนั่งคิดดูแล้ว ลุงว่าเราเหมาะกับข้าว " + rices.length + " พันธ์ุนี้ที่สุดแล้ว ลองเอาไปปลูกรับรองได้ผลผลิตงอกงามแน่ๆ เชื่อลุงสิ!"
   }
+
+  /**
+   * Create DialogFlow response message to send rice details to user
+   * @param {Rice} rice A rice breed to give details
+   * @returns {String | Payload | (String | Payload)[]} Response object
+   */
+  riceDetailMessage(rice) {
+    return [
+      rice.name + " งั้นเหรอ? ทำไมเราไม่ลองไปอ่านรายละเอียดที่ Link นี้หล่ะ!",
+      rice.detailURL
+    ]
+  }
 }
 
 // LINE custom message creation handler 
@@ -112,7 +124,7 @@ export class LineChatMsgFactory extends RiceSuggestorMessageFactory {
     let message = {
       type: "imagemap",
       baseUrl: publicFileURL("/img/rice_type_selector"),
-      altText: "Select rice type",
+      altText: "เลือกประเภทข้าว",
       baseSize: { width: 1040, height: 1040 },
       actions: [
         {
@@ -155,7 +167,7 @@ export class LineChatMsgFactory extends RiceSuggestorMessageFactory {
     let message = {
       type: "imagemap",
       baseUrl: publicFileURL("/img/rice_season_selector"),
-      altText: "Select rice type",
+      altText: "เลือกฤดูปลูก",
       baseSize: { width: 1040, height: 1040 },
       actions: [
         {
@@ -183,7 +195,7 @@ export class LineChatMsgFactory extends RiceSuggestorMessageFactory {
     let message = {
       type: "imagemap",
       baseUrl: publicFileURL("/img/rice_area_selector"),
-      altText: "Select rice type",
+      altText: "เลือกพื้นที่ปลูกข้าว",
       baseSize: { width: 1040, height: 1040 },
       actions: [
         {
@@ -230,7 +242,7 @@ export class LineChatMsgFactory extends RiceSuggestorMessageFactory {
     let message = {
       type: "imagemap",
       baseUrl: publicFileURL("/img/rain_frequency_selector"),
-      altText: "Select rice type",
+      altText: "เลือกจำนวนฝน",
       baseSize: { width: 1040, height: 1040 },
       actions: [
         {
@@ -266,7 +278,7 @@ export class LineChatMsgFactory extends RiceSuggestorMessageFactory {
     let message = {
       type: "imagemap",
       baseUrl: publicFileURL("/img/rice_pest_selector"),
-      altText: "Select rice type",
+      altText: "เลือกศัตรูพืช",
       baseSize: { width: 1040, height: 1040 },
       actions: [
         {
@@ -318,7 +330,7 @@ export class LineChatMsgFactory extends RiceSuggestorMessageFactory {
     let message = {
       type: "imagemap",
       baseUrl: publicFileURL("/img/rice_disease_selector"),
-      altText: "Select rice type",
+      altText: "เลือกโรคพืช",
       baseSize: { width: 1040, height: 1040 },
       actions: [
         {
@@ -384,7 +396,7 @@ export class LineChatMsgFactory extends RiceSuggestorMessageFactory {
     let premessage = this.ricePresuggestMessage(rices)
     let message = {
       type: "template",
-      altText: "Rice suggestions list",
+      altText: "รายการพันธุ์ข้าวที่แนะนำ",
       template: {
         type: "carousel",
         columns: []
@@ -420,6 +432,35 @@ export class LineChatMsgFactory extends RiceSuggestorMessageFactory {
     return [
       premessage,
       new Payload("LINE", message, { sendAsMessage: true })
+    ]
+  }
+
+  /**
+   * @param {Rice} rice rice
+   */
+  getRiceDetail(rice) {
+    let imgURL = rice.imgURL
+    let detailURL = rice.detailURL
+    let message = {
+      type: "template",
+      altText: "รายละเอียดข้าว",
+      template: {
+        type: "buttons",
+        thumbnailImageUrl: imgURL,
+        title: rice.name,
+        text: rice.type,
+        actions: [
+          {
+            type: "uri",
+            label: "รายละเอียด",
+            uri: detailURL
+          }
+        ]
+      }
+    }
+    return [
+      rice.name + " งั้นเหรอ? ทำไมเราไม่ลองไปอ่านรายละเอียดที่ Link นี้หล่ะ!",
+      message
     ]
   }
 

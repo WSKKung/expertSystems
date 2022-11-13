@@ -1,5 +1,6 @@
 import { WebhookClient } from "dialogflow-fulfillment"
 import { getRiceBreedSuggestion, canInferWaterLevel } from "../../expert_system/expert_system.js"
+import { getRiceByName } from "../../expert_system/rice_data.js"
 import { context, contextParams, intent } from "./constants.js"
 import { getMessageFactory } from "./messages.js"
 /**
@@ -15,6 +16,7 @@ export function fullfillmentRequest(req, res) {
   intentMap.set(intent.suggestRice.pests.confirm, pestInputFinished)
   intentMap.set(intent.suggestRice.diseases.input, handleSuggestionDiseaseInput)
   intentMap.set(intent.suggestRice.diseases.confirm, finallyGetRiceSuggestion)
+  intentMap.set(intent.getRiceDetail, getRiceDetails)
   agent.handleRequest(intentMap)
 }
 
@@ -168,6 +170,18 @@ function finallyGetRiceSuggestion(agent) {
   let riceSuggestions = getRiceBreedSuggestion(factor)
   agent.add(responseMsgFactory.riceSuggestionMessage(riceSuggestions))
 
+}
+
+/**
+ * Give user rice details
+ * @param {WebhookClient} agent An agent
+ * @returns {void}
+ */
+function getRiceDetails(agent) {
+  let responseMsgFactory = getMessageFactory(agent.requestSource)
+  let riceBreed = agent.parameters[contextParams.riceBreed]
+  let rice = getRiceByName(riceBreed)
+  agent.add(responseMsgFactory.riceDetailMessage(rice))
 }
 
 /**
