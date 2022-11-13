@@ -7,7 +7,6 @@ export const context = {
 export const intent = {
 	suggestRice: {
 		main: 'แนะนำข้าว',
-		rainFrequencyInput: 'แนะนำข้าว - เลือกปริมาณฝน',
 		pests: {
 			input: 'แนะนำข้าว - เลือกศัตรูพืช',
 			confirm: 'แนะนำข้าว - เลือกศัตรูพืช - ยืนยัน'

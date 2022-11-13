@@ -13,5 +13,5 @@ export const publicFolder = resolve(root, 'public')
  * @returns {URL} Full URL to file
  */
 export function publicFileURL(filePath) {
-	return pathToFileURL(join(publicFolder, filePath))
+  return process.env.hostname + "/" + filePath
 }
