@@ -103,7 +103,7 @@ function handleSuggestionPestInput(agent) {
     }
   }
 
-  agent.add(responseMsgFactory.pestSelector(repeating=true))
+  agent.add(responseMsgFactory.pestSelector(true))
 
 }
 
@@ -139,7 +139,7 @@ function handleSuggestionDiseaseInput(agent) {
     }
   }
 
-  agent.add(responseMsgFactory.diseaseSelector(repeating=true))
+  agent.add(responseMsgFactory.diseaseSelector(true))
 
 }
 
