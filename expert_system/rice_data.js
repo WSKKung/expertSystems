@@ -74,7 +74,7 @@ const scorers = new Map()
 function addRice(name, type, avgQuantity, detailURL, scorer) {
 	let entry = new Rice(name, type, avgQuantity, detailURL)
 	rices.set(name, entry)
-	scorers.set(name, scorer)
+	scorers.set(entry, scorer)
 }
 
 // shorthand for creating a new scorer
