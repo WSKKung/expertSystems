@@ -47,7 +47,10 @@ export function getRiceBreedSuggestion(factor) {
   let riceScores = getRiceScoreList(factor)
 
   // grab only the top 3 with the highest score
-  riceScores = riceScores.sort((a, b) => b.score - a.score).slice(0, 3)
+  riceScores = riceScores.sort((a, b) => {
+    let scoreDif = b.score - a.score
+    return Math.abs(scoreDif) < 0.0001 ? scoreDif : b.priority - a.priority 
+  }).slice(0, 3)
 
   return riceScores
 
