@@ -1,9 +1,9 @@
 import { WebhookClient } from "dialogflow-fulfillment"
 import { getRiceBreedSuggestion, canInferWaterLevel } from "../../expert_system/expert_system.js"
 import { context, contextParams, intent } from "./constants.js"
-import { LineChatMsgFactory, SimpleMessageFactory,  } from "./messages.js"
+import { LineChatMsgFactory, SimpleMessageFactory, } from "./messages.js"
 
-const simpleMSGFactor = new SimpleMessageFactory()
+const simpleMSGFactory = new SimpleMessageFactory()
 const lineMSGFactory = new LineChatMsgFactory()
 
 /**
@@ -33,33 +33,33 @@ function handleSuggestionInput(agent) {
 
   // Ask rice type
   if (!params.riceType) {
-    agent.add(simpleMSGFactor.riceTypeSelector())
+    agent.add(simpleMSGFactory.riceTypeSelector())
     agent.add(lineMSGFactory.riceTypeSelector())
     return
   }
 
   // Ask province
   if (!params.province) {
-    agent.add(simpleMSGFactor.provinceSelector())
+    agent.add(simpleMSGFactory.provinceSelector())
     return
   }
 
   // Ask season
   if (!params.season) {
-    agent.add(simpleMSGFactor.riceSeasonSelector())
+    agent.add(simpleMSGFactory.riceSeasonSelector())
     agent.add(lineMSGFactory.riceSeasonSelector())
     return
   }
 
   // Ask area
   if (!params.riceArea) {
-    agent.add(simpleMSGFactor.riceAreaSelector())
+    agent.add(simpleMSGFactory.riceAreaSelector())
     agent.add(lineMSGFactory.riceAreaSelector())
     return
   }
 
   if (!params.rainFrequency) {
-      
+
     // Skip to pest because rain frequency is not necessary for the following area
     if (canInferWaterLevel(params.riceArea)) {
 
@@ -71,12 +71,12 @@ function handleSuggestionInput(agent) {
       agent.context.set(context.inputPest, 2, params)
 
       // no return since we will be fallback to case where all inputs are set
-      
-    } 
-    
-   // Ask rain Frequency
+
+    }
+
+    // Ask rain Frequency
     else {
-      agent.add(simpleMSGFactor.rainFrequencySelector())
+      agent.add(simpleMSGFactory.rainFrequencySelector())
       agent.add(lineMSGFactory.rainFrequencySelector())
       return
     }
@@ -84,7 +84,7 @@ function handleSuggestionInput(agent) {
   }
 
   // all inputs are set, ask for rice pests next
-  agent.add(simpleMSGFactor.pestSelector())
+  agent.add(simpleMSGFactory.pestSelector())
   agent.add(lineMSGFactory.pestSelector())
 
 }
@@ -99,7 +99,7 @@ function handleSuggestionPestInput(agent) {
   let params = agent.parameters
   let inputPest = params[contextParams.inputPest]
   let curRicePests = params[contextParams.pests] || []
-  
+
   // need to increase lifetime
   // because some reason the final context did not shown in the response without it
   if (!params.curRicePests.includes(inputPest)) {
@@ -108,7 +108,7 @@ function handleSuggestionPestInput(agent) {
       ctx.parameters[contextParams.pests] = curRicePests.concat(inputPest)
     }
   }
-  
+
   agent.add("")
 
 }
@@ -119,7 +119,7 @@ function handleSuggestionPestInput(agent) {
  * @returns {void}
  */
 function pestInputFinished(agent) {
-  agent.add(simpleMSGFactor.diseaseSelector())
+  agent.add(simpleMSGFactory.diseaseSelector())
   agent.add(lineMSGFactory.diseaseSelector())
 }
 
@@ -131,9 +131,9 @@ function pestInputFinished(agent) {
 function handleSuggestionDiseaseInput(agent) {
 
   let params = agent.parameters
-  let inputDisease = params[contextParams.diseases] 
+  let inputDisease = params[contextParams.diseases]
   let curRiceDiseases = params[contextParams.diseases] || []
-  
+
   // need to increase lifetime
   // because some reason the final context did not shown in the response without it
   if (!params.curRiceDiseases.includes(inputDisease)) {
@@ -142,9 +142,9 @@ function handleSuggestionDiseaseInput(agent) {
       ctx.parameters[contextParams.diseases] = curRiceDiseases.concat(inputDisease)
     }
   }
-  
+
   agent.add("")
-  
+
 }
 
 /**
@@ -169,12 +169,9 @@ function finallyGetRiceSuggestion(agent) {
 
   let riceSuggestions = getRiceBreedSuggestion(factor)
 
-  if (agent.requestSource === "LINE") {
-    agent.add(simpleMSGFactor.riceSuggestionPremessage())
-    agent.add(lineMSGFactory.riceSuggestionMessage(riceSuggestions))
-  } else {
-    agent.add(simpleMSGFactor.riceSuggestionMessage(riceSuggestions))
-  }
+  agent.add(simpleMSGFactory.riceSuggestionPremessage())
+  agent.add(simpleMSGFactory.riceSuggestionMessage(riceSuggestions))
+  agent.add(lineMSGFactory.riceSuggestionMessage(riceSuggestions))
 
 }
 
