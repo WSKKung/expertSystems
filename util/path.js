@@ -1,5 +1,5 @@
 import { dirname, join, resolve } from 'path'
-import { fileURLToPath, pathToFileURL, URL } from 'url'
+import { fileURLToPath, URL } from 'url'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
