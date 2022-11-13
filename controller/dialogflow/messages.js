@@ -27,7 +27,7 @@ export class RiceSuggestorMessageFactory {
    * @returns {String | Payload | (String | Payload)[]} Response object
    */
   riceTypeSelector() {
-    return "ได้เลยสิ! ว่าแต่หนูอยากปลูกข้าวพันธ์ุไหนรึ? (ข้าวเจ้า, ข้าวเหนียว, ข้าวญี่ปุ่น, ข้าวบาร์เลย์, ข้าวสาลี)"
+    return "ได้เลยสิ! ว่าแต่เราอยากปลูกข้าวพันธ์ุไหนรึ? (ข้าวเจ้า, ข้าวเหนียว, ข้าวญี่ปุ่น, ข้าวบาร์เลย์, ข้าวสาลี)"
   }
 
   /**
@@ -43,7 +43,7 @@ export class RiceSuggestorMessageFactory {
    * @returns {String | Payload | (String | Payload)[]} Response object
    */
   riceSeasonSelector() {
-    return "อยากจะปลูกในฤดูไหนดีล่ะ? (นาปี, นาปรัง)" 
+    return "อยากจะปลูกในฤดูไหนดีล่ะ?(นาปี, นาปรัง)"
   }
 
   /**
@@ -51,7 +51,7 @@ export class RiceSuggestorMessageFactory {
    * @returns {String | Payload | (String | Payload)[]} Response object
    */
   riceAreaSelector() {
-    return "แล้วพื้นที่นาเป็นแบบไหนล่ะไอหนู? (นาชลประทาน, นาน้ำฝน, นาข้าวขึ้นน้ำ, นาไร่, นาที่สูง)"
+    return "แล้วพื้นที่นาของเราเป็นแบบไหน? (นาชลประทาน, นาน้ำฝน, นาข้าวขึ้นน้ำ, นาไร่, นาที่สูง)"
   }
 
   /**
@@ -68,7 +68,7 @@ export class RiceSuggestorMessageFactory {
    * @returns {String | Payload | (String | Payload)[]} Response object
    */
   pestSelector(repeating = false) {
-    return repeating ? "แล้วมีอะไรอีกมั้ย?" : "แถวนั้นมีแมลงอะไรระบาดอยู่หรอหนู?"
+    return repeating ? "แล้วมีอะไรอีกมั้ย? ถ้าครบแล้วบอกลุงได้เลย" : "แถวนั้นมีแมลงอะไรระบาดอยู่หรอหนู?"
   }
 
   /**
@@ -77,7 +77,7 @@ export class RiceSuggestorMessageFactory {
    * @returns {String | Payload | (String | Payload)[]} Response object
    */
   diseaseSelector(repeating = false) {
-    return repeating ? "แล้วมีอะไรอีกมั้ย?" : "แล้วโรคล่ะ! มีโรคอะไรระบาดแถวนั้นมั่งล่ะ?"
+    return repeating ? "แล้วมีอะไรอีกมั้ย? ถ้าครบแล้วบอกลุงได้เลย" : "แล้วโรคล่ะ! มีโรคอะไรระบาดแถวนั้นมั่งล่ะ?"
   }
 
   /**
@@ -86,9 +86,22 @@ export class RiceSuggestorMessageFactory {
    * @returns {String | Payload | (String | Payload)[]} Response object
    */
   riceSuggestionMessage(rices) {
-    return rices.map(rice => rice.name).join(", ")
+    let premessage = this.ricePresuggestMessage(rices)
+    let messages = [premessage]
+    rices.forEach((rice, index) => {
+      messages.push((index + 1) + ". " + rice.name)
+    })
+    return messages
   }
 
+  /**
+   * Create DialogFlow response message to send before giving list of rices to suggest to user
+   * @param {RiceBreed[]} rices A list of rice breed entry to suggest to user
+   * @returns {String | Payload | (String | Payload)[]} Response object
+   */
+  ricePresuggestMessage(rices) {
+    return "จากที่ลุงลองนั่งคิดดูแล้ว ลุงว่าเราเหมาะกับข้าว " + rices.length + " พันธ์ุนี้ที่สุดแล้ว ลองเอาไปปลูกรับรองได้ผลผลิตงอกงามแน่ๆ เชื่อลุงสิ!"
+  }
 }
 
 // LINE custom message creation handler 
@@ -162,7 +175,7 @@ export class LineChatMsgFactory extends RiceSuggestorMessageFactory {
       super.riceSeasonSelector(),
       new Payload("LINE", message, { sendAsMessage: true })
     ]
-      
+
   }
 
   riceAreaSelector() {
@@ -368,6 +381,7 @@ export class LineChatMsgFactory extends RiceSuggestorMessageFactory {
    */
   riceSuggestionMessage(rices) {
 
+    let premessage = this.ricePresuggestMessage(rices)
     let message = {
       type: "template",
       altText: "Rice suggestions list",
@@ -382,15 +396,17 @@ export class LineChatMsgFactory extends RiceSuggestorMessageFactory {
      * @param {RiceBreed} rice Rice
      */
     function createRiceCarouselEntry(rice) {
+      let imgURL = getURLToRiceImage(rice)
+      let detailURL = getURLToRiceDetail(rice)
       return {
-        thumbnailImageUrl: getURLToRiceImage(rice),
+        thumbnailImageUrl: imgURL,
         title: rice.name,
-        text: (rice.score * 100) + "%",
+        text: rice.type,
         actions: [
           {
             type: "uri",
             label: "รายละเอียด",
-            uri: getURLToRiceDetail(rice)
+            uri: detailURL
           }
         ]
       }
@@ -401,8 +417,10 @@ export class LineChatMsgFactory extends RiceSuggestorMessageFactory {
       message.template.columns.push(entry)
     }
 
-    return new Payload("LINE", message, { sendAsMessage: true })
-
+    return [
+      premessage,
+      new Payload("LINE", message, { sendAsMessage: true })
+    ]
   }
 
 }
