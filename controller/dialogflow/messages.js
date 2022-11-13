@@ -438,7 +438,7 @@ export class LineChatMsgFactory extends RiceSuggestMessageFactory {
   /**
    * @param {Rice} rice rice
    */
-  getRiceDetail(rice) {
+  riceDetailMessage(rice) {
     let imgURL = rice.imgURL
     let detailURL = rice.detailURL
     let message = {
