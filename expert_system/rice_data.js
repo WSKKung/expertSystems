@@ -721,7 +721,7 @@ addRice("ข้าวหอมกุหลาบแดง", riceType.paddy, 750,
   .build()
   )
 
-addRice("กวก. 1", riceType.japanese, 718,
+addRice("กวก 1", riceType.japanese, 718,
 "https://www.ricethailand.go.th/rkb3/01%20%E0%B8%81%E0%B8%A7%E0%B8%81.1.pdf",
   scorer()
   .add({ either: [{ region: region.north }, { region: region.northeast }] }, 1)
@@ -730,7 +730,7 @@ addRice("กวก. 1", riceType.japanese, 718,
   .build()
   )
 
-addRice("กวก. 2", riceType.japanese, 707, 
+addRice("กวก 2", riceType.japanese, 707, 
 "https://www.ricethailand.go.th/rkb3/02%E0%B8%82%E0%B9%89%E0%B8%B2%E0%B8%A7%E0%B8%8D%E0%B8%B5%E0%B9%88%E0%B8%9B%E0%B8%B8%E0%B9%88%E0%B8%99%20%E0%B8%81%E0%B8%A7%E0%B8%81.2%20(Khao%E2%80%99Yipun%20DOA2).pdf",
   scorer()
   .add({ region: region.north }, 1)
