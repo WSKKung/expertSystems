@@ -1,5 +1,3 @@
-import { area, disease, inSeason, pest, province, rainFrequency, region, riceType, waterLevel } from "./variables.js";
-import { ScorerBuilder, Scorer } from "./scorer.js";
 import { getRiceByType, getRiceScorer, Rice } from "./rice_data.js";
 
 /**
