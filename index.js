@@ -1,6 +1,10 @@
 import express from 'express'
+import { join } from 'path'
 import { router } from './routes/router.js'
 import { publicFolder } from './util/path.js'
+
+import dotenv from 'dotenv'
+dotenv.config()
 
 const app = express()
 
