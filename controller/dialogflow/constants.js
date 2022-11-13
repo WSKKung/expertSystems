@@ -1,5 +1,4 @@
 export const context = {
-	recommending: 'recommending',
 	inputPest: 'recommending-input-pest',
 	inputDisease: 'recommending-input-disease',
 	recommendingFinished: 'recommending-finished'

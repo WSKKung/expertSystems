@@ -63,7 +63,7 @@ function handleSuggestionInput(agent) {
       clearAgentContexts(agent)
 
       // and then set new one with given params
-      agent.context.set(context.recommending, 10, params)
+      //agent.context.set(context.recommending, 10, params)
       agent.context.set(context.inputPest, 2, params)
 
       // no return since we will be fallback to case where all inputs are set
