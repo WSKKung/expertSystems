@@ -1,4 +1,4 @@
-import { getRiceScoreList, RiceBreed } from "./rice_rules.js"
+import { getRiceScoreList } from "./rice_scores.js"
 import * as V from "./variables.js"
 
 // Fixed commit name cuz I accidently commit & push with other unrelated commit
@@ -7,7 +7,7 @@ import * as V from "./variables.js"
 /**
  * Handles user list input of rice pests during rice suggestion process
  * @param {*} factor A factor object represents user input
- * @returns {RiceBreed[]}
+ * @returns {ScoredRice[]}
  */
 export function getRiceBreedSuggestion(factor) {
 
@@ -49,7 +49,7 @@ export function getRiceBreedSuggestion(factor) {
   // grab only the top 3 with the highest score
   riceScores = riceScores.sort((a, b) => {
     let scoreDif = b.score - a.score
-    return Math.abs(scoreDif) < 0.0001 ? b.priority - a.priority : scoreDif
+    return Math.abs(scoreDif) < 0.0001 ? b.rice.avgQuantity - a.rice.avgQuantity : scoreDif
   }).slice(0, 3)
 
   return riceScores

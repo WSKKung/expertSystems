@@ -1,8 +1,8 @@
 import { Payload } from "dialogflow-fulfillment";
-import { RiceBreed } from "../../expert_system/rice_rules.js";
+import { ScoredRice } from "../../expert_system/rice_scores.js";
 import { publicFileURL } from "../../util/path.js";
 import { area, inSeason, disease, pest, rainFrequency, riceType } from "../../expert_system/variables.js";
-import { getURLToRiceDetail, getURLToRiceImage } from "../../expert_system/rice_details.js";
+import { Rice } from "../../expert_system/rice_data.js";
 
 // I should just use Typescript lol
 
@@ -82,21 +82,21 @@ export class RiceSuggestorMessageFactory {
 
   /**
    * Create DialogFlow response message for giving user a list of suggested rice breeds to plants
-   * @param {RiceBreed[]} rices A list of rice breed entry to suggest to user
+   * @param {ScoredRice[]} rices A list of rice breed entry to suggest to user
    * @returns {String | Payload | (String | Payload)[]} Response object
    */
   riceSuggestionMessage(rices) {
     let premessage = this.ricePresuggestMessage(rices)
-    let messages = [premessage]
+    let messages = [ premessage ]
     rices.forEach((rice, index) => {
-      messages.push((index + 1) + ". " + rice.name)
+      messages.push((index + 1) + ". " + rice.rice.name)
     })
     return messages
   }
 
   /**
    * Create DialogFlow response message to send before giving list of rices to suggest to user
-   * @param {RiceBreed[]} rices A list of rice breed entry to suggest to user
+   * @param {ScoredRice[]} rices A list of rice breed entry to suggest to user
    * @returns {String | Payload | (String | Payload)[]} Response object
    */
   ricePresuggestMessage(rices) {
@@ -377,7 +377,7 @@ export class LineChatMsgFactory extends RiceSuggestorMessageFactory {
   }
 
   /**
-   * @param {RiceBreed[]} rices A list of rice breed entry to suggest to user
+   * @param {ScoredRice[]} rices A list of rice breed entry to suggest to user
    */
   riceSuggestionMessage(rices) {
 
@@ -393,11 +393,11 @@ export class LineChatMsgFactory extends RiceSuggestorMessageFactory {
 
     /**
      * Create entry for a carousel template message
-     * @param {RiceBreed} rice Rice
+     * @param {Rice} rice Rice
      */
     function createRiceCarouselEntry(rice) {
-      let imgURL = getURLToRiceImage(rice)
-      let detailURL = getURLToRiceDetail(rice)
+      let imgURL = rice.imgURL
+      let detailURL = rice.detailURL
       return {
         thumbnailImageUrl: imgURL,
         title: rice.name,
@@ -413,7 +413,7 @@ export class LineChatMsgFactory extends RiceSuggestorMessageFactory {
     }
 
     for (let rice of rices) {
-      let entry = createRiceCarouselEntry(rice)
+      let entry = createRiceCarouselEntry(rice.rice)
       message.template.columns.push(entry)
     }
 
