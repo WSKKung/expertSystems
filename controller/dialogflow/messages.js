@@ -6,51 +6,79 @@ import { getURIToRiceDetail, getURIToRiceImage } from "../../expert_system/rice_
 
 // I should just use Typescript lol
 
-class RiceSuggestorMessageFactory {
+/**
+ * Get an appropiate message factory for given platform
+ * @param {String} platform platform
+ * @returns {RiceSuggestorMessageFactory} message factory
+ */
+export function getMessageFactory(platform) {
+  switch (platform) {
+    case "LINE":
+      return new LineChatMsgFactory()
+    default:
+      return new RiceSuggestorMessageFactory()
+  }
+}
+
+export class RiceSuggestorMessageFactory {
 
   /**
    * Create DialogFlow response message to ask user to select a rice type
-   * @returns {String | dialogflow.RichResponse} Response object
+   * @returns {String | Payload | (String | Payload)[]} Response object
    */
-  riceTypeSelector() { throw new Error("Unimpletemented") }
+  riceTypeSelector() {
+    return "ได้เลยสิ! ว่าแต่หนูอยากปลูกข้าวพันธ์ุไหนรึ? (ข้าวเจ้า, ข้าวเหนียว, ข้าวญี่ปุ่น, ข้าวบาร์เลย์, ข้าวสาลี)"
+  }
 
   /**
    * Create DialogFlow response message to ask user to select a season to plant rice (either in-season or off-season)
-   * @returns {String | dialogflow.RichResponse} Response object
+   * @returns {String | Payload | (String | Payload)[]} Response object
    */
-  riceSeasonSelector() { throw new Error("Unimpletemented") }
+  riceSeasonSelector() {
+    return "แล้ว...อยากปลูกที่จังหวัดอะไรล่ะ?" 
+  }
 
   /**
    * Create DialogFlow response message to ask user to select type of area to plant rice
-   * @returns {String | dialogflow.RichResponse} Response object
+   * @returns {String | Payload | (String | Payload)[]} Response object
    */
-  riceAreaSelector() { throw new Error("Unimpletemented") }
+  riceAreaSelector() {
+    return "อยากจะปลูกในฤดูไหนดีล่ะ? (นาปี, นาปรัง)"
+  }
 
   /**
    * Create DialogFlow response message to ask user to select how much the rain falls in their area
-   * @returns {String | dialogflow.RichResponse} Response object
+   * @returns {String | Payload | (String | Payload)[]} Response object
    */
-  rainFrequencySelector() { throw new Error("Unimpletemented") }
+  rainFrequencySelector() {
+    return "ที่นั่นฝนตกมากมั้ย? (ฝนมาก, ฝนปานกลาง, ฝนน้อย)"
+  }
 
   /**
    * Create DialogFlow response message to ask user to select rice pests in their area
-   * @returns {String | dialogflow.RichResponse} Response object
+   * @param {Boolean} repeating Set to true if user is currently giving input repeatedly, default to false
+   * @returns {String | Payload | (String | Payload)[]} Response object
    */
-  pestSelector() { throw new Error("Unimpletemented") }
+  pestSelector(repeating = false) {
+    return repeating ? "แล้วมีอะไรอีกมั้ย?" : "แถวนั้นมีแมลงอะไรระบาดอยู่หรอหนู?"
+  }
 
   /**
    * Create DialogFlow response message to ask user to select rice diseases in their area
-   * @returns {String | dialogflow.RichResponse} Response object
+   * @param {Boolean} repeating Set to true if user is currently giving input repeatedly, default to false
+   * @returns {String | Payload | (String | Payload)[]} Response object
    */
-  diseaseSelector() { throw new Error("Unimpletemented") }
+  diseaseSelector(repeating = false) {
+    return repeating ? "แล้วมีอะไรอีกมั้ย?" : "แล้วโรคล่ะ! มีโรคอะไรระบาดแถวนั้นมั่งล่ะ?"
+  }
 
   /**
    * Create DialogFlow response message for giving user a list of suggested rice breeds to plants
    * @param {RiceBreed[]} rices A list of rice breed entry to suggest to user
-   * @returns {String | dialogflow.RichResponse} Response object
+   * @returns {String | Payload | (String | Payload)[]} Response object
    */
   riceSuggestionMessage(rices) {
-    throw new Error("Unimpletemented")
+    return rices.map(rice => rice.name).join(", ")
   }
 
 }
@@ -94,7 +122,10 @@ export class LineChatMsgFactory extends RiceSuggestorMessageFactory {
       ]
     }
 
-    return new Payload("LINE", message, { sendAsMessage: true })
+    return [
+      super.riceTypeSelector(),
+      new Payload("LINE", message, { sendAsMessage: true })
+    ]
 
   }
 
@@ -119,7 +150,11 @@ export class LineChatMsgFactory extends RiceSuggestorMessageFactory {
       ]
     }
 
-    return new Payload("LINE", message, { sendAsMessage: true })
+    return [
+      super.riceSeasonSelector(),
+      new Payload("LINE", message, { sendAsMessage: true })
+    ]
+      
   }
 
   riceAreaSelector() {
@@ -163,7 +198,10 @@ export class LineChatMsgFactory extends RiceSuggestorMessageFactory {
       ]
     }
 
-    return new Payload("LINE", message, { sendAsMessage: true })
+    return [
+      super.riceAreaSelector(),
+      new Payload("LINE", message, { sendAsMessage: true })
+    ]
   }
 
   rainFrequencySelector() {
@@ -192,10 +230,17 @@ export class LineChatMsgFactory extends RiceSuggestorMessageFactory {
       ]
     }
 
-    return new Payload("LINE", message, { sendAsMessage: true })
+    return [
+      super.rainFrequencySelector(),
+      new Payload("LINE", message, { sendAsMessage: true })
+    ]
   }
 
-  pestSelector() {
+  pestSelector(repeating) {
+
+    if (repeating) {
+      return super.pestSelector(repeating)
+    }
 
     let message = {
       type: "imagemap",
@@ -236,11 +281,18 @@ export class LineChatMsgFactory extends RiceSuggestorMessageFactory {
       ]
     }
 
-    return new Payload("LINE", message, { sendAsMessage: true })
+    return [
+      super.pestSelector(repeating),
+      new Payload("LINE", message, { sendAsMessage: true })
+    ]
 
   }
 
-  diseaseSelector() {
+  diseaseSelector(repeating) {
+
+    if (repeating) {
+      return super.diseaseSelector(repeating)
+    }
 
     let message = {
       type: "imagemap",
@@ -296,7 +348,10 @@ export class LineChatMsgFactory extends RiceSuggestorMessageFactory {
       ]
     }
 
-    return new Payload("LINE", message, { sendAsMessage: true })
+    return [
+      super.diseaseSelector(repeating),
+      new Payload("LINE", message, { sendAsMessage: true })
+    ]
 
   }
 
@@ -339,52 +394,7 @@ export class LineChatMsgFactory extends RiceSuggestorMessageFactory {
     }
 
     return new Payload("LINE", message, { sendAsMessage: true })
-  }
 
-}
-
-// Simple custom message creation handler that should be compatable with all platforms
-export class SimpleMessageFactory extends RiceSuggestorMessageFactory {
-
-  riceTypeSelector() {
-    return "ได้เลยสิ! ว่าแต่หนูอยากปลูกข้าวพันธ์ุไหนรึ? (ข้าวเจ้า, ข้าวเหนียว, ข้าวญี่ปุ่น, ข้าวบาร์เลย์, ข้าวสาลี)"
-  }
-
-  provinceSelector() {
-    return "แล้ว...อยากปลูกที่จังหวัดอะไรล่ะ?"
-  }
-
-  riceSeasonSelector() {
-    return "อยากจะปลูกในฤดูไหนดีล่ะ? (นาปี, นาปรัง)"
-  }
-
-  riceAreaSelector() {
-    return "แล้วพื้นที่นาเป็นแบบไหนล่ะไอหนู? (นาชลประทาน, นาน้ำฝน, นาข้าวน้ำขึ้น, นาไร่, นาที่สูง)"
-  }
-  rainFrequencySelector() {
-    return "ที่นั่นฝนตกมากมั้ย? (ฝนมาก, ฝนปานกลาง, ฝนน้อย)"
-  }
-
-  pestSelector() {
-    return "Input pests"
-  }
-
-  diseaseSelector() {
-    return "Input diseases"
-  }
-
-  /**
-   * @param {RiceBreed[]} rices A list of rice breed entry to suggest to user
-   */
-  riceSuggestionMessage(rices) {
-    return rices.map(rice => rice.name).join(", ")
-  }
-
-  /**
-   * @return {String} Message
-   */
-  riceSuggestionPremessage() {
-    return "แนะนำข้าว"
   }
 
 }

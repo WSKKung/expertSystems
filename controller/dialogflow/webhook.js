@@ -1,11 +1,7 @@
 import { WebhookClient } from "dialogflow-fulfillment"
 import { getRiceBreedSuggestion, canInferWaterLevel } from "../../expert_system/expert_system.js"
 import { context, contextParams, intent } from "./constants.js"
-import { LineChatMsgFactory, SimpleMessageFactory, } from "./messages.js"
-
-const simpleMSGFactory = new SimpleMessageFactory()
-const lineMSGFactory = new LineChatMsgFactory()
-
+import { getMessageFactory } from "./messages.js"
 /**
  * Accept fulfillment request from Dialogflow.
  * @param {Request} req A Dialogflow request object
@@ -30,31 +26,29 @@ export function fullfillmentRequest(req, res) {
 function handleSuggestionInput(agent) {
 
   let params = agent.parameters
+  let responseMsgFactory = getMessageFactory(agent.requestSource)
 
   // Ask rice type
   if (!params.riceType) {
-    agent.add(simpleMSGFactory.riceTypeSelector())
-    agent.add(lineMSGFactory.riceTypeSelector())
+    agent.add(responseMsgFactory.riceTypeSelector())
     return
   }
 
   // Ask province
   if (!params.province) {
-    agent.add(simpleMSGFactory.provinceSelector())
+    agent.add(responseMsgFactory.provinceSelector())
     return
   }
 
   // Ask season
   if (!params.season) {
-    agent.add(simpleMSGFactory.riceSeasonSelector())
-    agent.add(lineMSGFactory.riceSeasonSelector())
+    agent.add(responseMsgFactory.riceSeasonSelector())
     return
   }
 
   // Ask area
   if (!params.riceArea) {
-    agent.add(simpleMSGFactory.riceAreaSelector())
-    agent.add(lineMSGFactory.riceAreaSelector())
+    agent.add(responseMsgFactory.riceAreaSelector())
     return
   }
 
@@ -76,16 +70,14 @@ function handleSuggestionInput(agent) {
 
     // Ask rain Frequency
     else {
-      agent.add(simpleMSGFactory.rainFrequencySelector())
-      agent.add(lineMSGFactory.rainFrequencySelector())
+      agent.add(responseMsgFactory.rainFrequencySelector())
       return
     }
 
   }
 
   // all inputs are set, ask for rice pests next
-  agent.add(simpleMSGFactory.pestSelector())
-  agent.add(lineMSGFactory.pestSelector())
+  agent.add(responseMsgFactory.pestSelector())
 
 }
 
@@ -95,6 +87,8 @@ function handleSuggestionInput(agent) {
  * @returns {void}
  */
 function handleSuggestionPestInput(agent) {
+
+  let responseMsgFactory = getMessageFactory(agent.requestSource)
 
   let params = agent.parameters
   let inputPest = params[contextParams.inputPest]
@@ -109,7 +103,7 @@ function handleSuggestionPestInput(agent) {
     }
   }
 
-  agent.add("")
+  agent.add(responseMsgFactory.pestSelector(repeating=true))
 
 }
 
@@ -119,8 +113,8 @@ function handleSuggestionPestInput(agent) {
  * @returns {void}
  */
 function pestInputFinished(agent) {
-  agent.add(simpleMSGFactory.diseaseSelector())
-  agent.add(lineMSGFactory.diseaseSelector())
+  let responseMsgFactory = getMessageFactory(agent.requestSource)
+  agent.add(responseMsgFactory.diseaseSelector())
 }
 
 /**
@@ -129,6 +123,8 @@ function pestInputFinished(agent) {
  * @returns {void}
  */
 function handleSuggestionDiseaseInput(agent) {
+
+  let responseMsgFactory = getMessageFactory(agent.requestSource)
 
   let params = agent.parameters
   let inputDisease = params[contextParams.diseases]
@@ -143,7 +139,7 @@ function handleSuggestionDiseaseInput(agent) {
     }
   }
 
-  agent.add("")
+  agent.add(responseMsgFactory.diseaseSelector(repeating=true))
 
 }
 
@@ -153,6 +149,8 @@ function handleSuggestionDiseaseInput(agent) {
  * @returns {void}
  */
 function finallyGetRiceSuggestion(agent) {
+
+  let responseMsgFactory = getMessageFactory(agent.requestSource)
 
   let ctx = agent.context.get(context.recommending)
   let params = ctx.parameters
@@ -168,10 +166,7 @@ function finallyGetRiceSuggestion(agent) {
   }
 
   let riceSuggestions = getRiceBreedSuggestion(factor)
-
-  agent.add(simpleMSGFactory.riceSuggestionPremessage())
-  agent.add(simpleMSGFactory.riceSuggestionMessage(riceSuggestions))
-  agent.add(lineMSGFactory.riceSuggestionMessage(riceSuggestions))
+  agent.add(responseMsgFactory.riceSuggestionMessage(riceSuggestions))
 
 }
 
