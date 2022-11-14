@@ -299,17 +299,17 @@ export class LineChatMsgFactory extends RiceSuggestMessageFactory {
         {
           type: "message",
           text: pest.stemBorer,
-          area: { x: 37, y: 335, width: 306, height: 680 }
+          area: { x: 37, y: 680, width: 306, height: 680 }
         },
         {
           type: "message",
           text: pest.riceGallMidge,
-          area: { x: 367, y: 335, width: 306, height: 680 }
+          area: { x: 367, y: 680, width: 306, height: 680 }
         },
         {
           type: "message",
           text: pest.nematodes,
-          area: { x: 697, y: 335, width: 306, height: 680 }
+          area: { x: 697, y: 680, width: 306, height: 680 }
         }
       ]
     }
